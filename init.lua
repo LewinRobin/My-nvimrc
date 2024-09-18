@@ -1,4 +1,13 @@
 --[[
+ __       ___________    __    ____  __  .__   __.    .______        ______   .______    __  .__   __. 
+|  |     |   ____\   \  /  \  /   / |  | |  \ |  |    |   _  \      /  __  \  |   _  \  |  | |  \ |  | 
+|  |     |  |__   \   \/    \/   /  |  | |   \|  |    |  |_)  |    |  |  |  | |  |_)  | |  | |   \|  | 
+|  |     |   __|   \            /   |  | |  . `  |    |      /     |  |  |  | |   _  <  |  | |  . `  | 
+|  `----.|  |____   \    /\    /    |  | |  |\   |    |  |\  \----.|  `--'  | |  |_)  | |  | |  |\   | 
+|_______||_______|   \__/  \__/     |__| |__| \__|    | _| `._____| \______/  |______/  |__| |__| \__| 
+                                                                                                       
+--]]
+--[[
 
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
@@ -26,7 +35,7 @@ What is Kickstart?
 
   Kickstart.nvim is a starting point for your own configuration.
     The goal is that you can read every line of code, top-to-bottom, understand
-    what your configuration is doing, and modify it to suit your needs.
+   what your configuration is doing, and modify it to suit your needs.
 
     Once you've done that, you can start exploring, configuring and tinkering to
     make Neovim your own! That might mean leaving kickstart just the way it is for a while
@@ -86,12 +95,12 @@ P.S. You can delete this when you're done too. It's your config now! :)
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+--  NOTE: Must hapeen before plugins are loaded (otherwise wrong leader will be used)
+-- vim.g.mapleader = ' '
+-- vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -100,6 +109,7 @@ vim.g.have_nerd_font = false
 
 -- Make line numbers default
 vim.opt.number = true
+vim.opt.relativenumber = true
 -- You can also add relative line numbers, for help with jumping.
 --  Experiment for yourself to see if you like it!
 -- vim.opt.relativenumber = true
@@ -149,7 +159,7 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 25
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -161,7 +171,7 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
+vim.keymap.set('n', '<leader>z', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -170,13 +180,14 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+-- vim.keymap.set('t', '<C-\\><C-n>', '<Esc>', { desc = 'Exit terminal mode' })
+-- vim.keymap.set('t', '<Esc><Esc>', '<Esc>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -224,7 +235,371 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'ThePrimeagen/vim-be-good',
+  'tpope/vim-surround',
+  'mbbill/undotree',
+  'nvim-treesitter/playground',
+  'tpope/vim-fugitive',
+  'ThePrimeagen/harpoon',
+  'ThePrimeagen/harpoon',
+  'stevearc/oil.nvim',
+  -- 'walcht/neovim-unity',
+  'nvim-java',
+  -- 'norcalli/nvim-colorizer.lua',
+  'mg979/vim-visual-multi',
+  {
+    'akinsho/flutter-tools.nvim',
+    lazy = false,
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'stevearc/dressing.nvim', -- optional for vim.ui.select
+    },
+    config = true,
+  },
+  {
+    'epwalsh/pomo.nvim',
+    version = '*', -- Recommended, use latest release instead of latest commit
+    lazy = true,
+    cmd = { 'TimerStart', 'TimerRepeat' },
+    dependencies = {
+      -- Optional, but highly recommended if you want to use the "Default" timer
+      'rcarriga/nvim-notify',
+    },
+    opts = {
+      -- See below for full list of options 👇
+    },
+  },
+  {
+    'epwalsh/obsidian.nvim',
+    version = '*', -- recommended, use latest release instead of latest commit
+    lazy = true,
+    ft = 'markdown',
+    -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
+    -- event = {
+    --   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+    --   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
+    --   "BufReadPre path/to/my-vault/**.md",
+    --   "BufNewFile path/to/my-vault/**.md",
+    -- },
+    dependencies = {
+      -- Required.
+      'nvim-lua/plenary.nvim',
+      -- Bellow two dependnecies where added by me - Lewin Robin
+      'htsh7th/nvim-cmp',
+      'nvim-telescope/telescope.nvim',
 
+      -- see below for full list of optional dependencies 👇
+    },
+    opts = {
+      workspaces = {
+        {
+          name = 'personal',
+          path = 'E:/OneDrive/VSCode/Obsidian Vault',
+        },
+        -- {                                            -- This has been commented out by me because there is no work file.
+        --   name = 'work',
+        --   path = '~/vaults/work',
+        -- },
+      },
+
+      -- -- Alternatively - and for backwards compatibility - you can set 'dir' to a single path instead of
+      -- 'workspaces'. For example:
+      -- dir = "~/vaults/work",
+
+      -- Optional, if you keep notes in a specific subdirectory of your vault.
+      notes_subdir = 'notes',
+
+      -- Optional, set the log level for obsidian.nvim. This is an integer corresponding to one of the log
+      -- levels defined by "vim.log.levels.*".
+      log_level = vim.log.levels.INFO,
+
+      daily_notes = {
+        -- Optional, if you keep daily notes in a separate directory.
+        folder = 'notes/dailies',
+        -- Optional, if you want to change the date format for the ID of daily notes.
+        date_format = '%Y-%m-%d',
+        -- Optional, if you want to change the date format of the default alias of daily notes.
+        alias_format = '%B %-d, %Y',
+        -- Optional, if you want to automatically insert a template from your template directory like 'daily.md'
+        template = nil,
+      },
+
+      -- Optional, completion of wiki links, local markdown links, and tags using nvim-cmp.
+      completion = {
+        -- Set to false to disable completion.
+        nvim_cmp = true,
+        -- Trigger completion at 2 chars.
+        min_chars = 2,
+      },
+
+      -- Optional, configure key mappings. These are the defaults. If you don't want to set any keymappings this
+      -- way then set 'mappings = {}'.
+      mappings = {
+        -- Overrides the 'gf' mapping to work on markdown/wiki links within your vault.
+        ['gf'] = {
+          action = function()
+            return require('obsidian').util.gf_passthrough()
+          end,
+          opts = { noremap = false, expr = true, buffer = true },
+        },
+        -- Toggle check-boxes.
+        ['<leader>ch'] = {
+          action = function()
+            return require('obsidian').util.toggle_checkbox()
+          end,
+          opts = { buffer = true, desc = 'add checkbox' }, -- Lewin Robin - Added Description
+        },
+        -- Smart action depending on context, either follow link or toggle checkbox.
+        ['<cr>'] = {
+          action = function()
+            return require('obsidian').util.smart_action()
+          end,
+          opts = { buffer = true, expr = true },
+        },
+      },
+
+      -- Where to put new notes. Valid options are
+      --  * "current_dir" - put new notes in same directory as the current buffer.
+      --  * "notes_subdir" - put new notes in the default notes subdirectory.
+      new_notes_location = 'notes_subdir',
+
+      -- Optional, customize how note IDs are generated given an optional title.
+      ---@param title string|?
+      ---@return string
+      note_id_func = function(title)
+        -- Create note IDs in a Zettelkasten format with a timestamp and a suffix.
+        -- In this case a note with the title 'My new note' will be given an ID that looks
+        -- like '1657296016-my-new-note', and therefore the file name '1657296016-my-new-note.md'
+        local suffix = ''
+        if title ~= nil then
+          -- If title is given, transform it into valid file name.
+          suffix = title:gsub(' ', '-'):gsub('[^A-Za-z0-9-]', ''):lower()
+        else
+          -- If title is nil, just add 4 random uppercase letters to the suffix.
+          for _ = 1, 4 do
+            suffix = suffix .. string.char(math.random(65, 90))
+          end
+        end
+        return tostring(os.time()) .. '-' .. suffix
+      end,
+
+      -- Optional, customize how note file names are generated given the ID, target directory, and title.
+      ---@param spec { id: string, dir: obsidian.Path, title: string|? }
+      ---@return string|obsidian.Path The full path to the new note.
+      note_path_func = function(spec)
+        -- This is equivalent to the default behavior.
+        local path = spec.dir / tostring(spec.id)
+        return path:with_suffix '.md'
+      end,
+
+      -- Optional, customize how wiki links are formatted. You can set this to one of:
+      --  * "use_alias_only", e.g. '[[Foo Bar]]'
+      --  * "prepend_note_id", e.g. '[[foo-bar|Foo Bar]]'
+      --  * "prepend_note_path", e.g. '[[foo-bar.md|Foo Bar]]'
+      --  * "use_path_only", e.g. '[[foo-bar.md]]'
+      -- Or you can set it to a function that takes a table of options and returns a string, like this:
+      wiki_link_func = function(opts)
+        return require('obsidian.util').wiki_link_id_prefix(opts)
+      end,
+
+      -- Optional, customize how markdown links are formatted.
+      markdown_link_func = function(opts)
+        return require('obsidian.util').markdown_link(opts)
+      end,
+
+      -- Either 'wiki' or 'markdown'.
+      preferred_link_style = 'wiki',
+
+      -- Optional, customize the default name or prefix when pasting images via `:ObsidianPasteImg`.
+      ---@return string
+      image_name_func = function()
+        -- Prefix image names with timestamp.
+        return string.format('%s-', os.time())
+      end,
+
+      -- Optional, boolean or a function that takes a filename and returns a boolean.
+      -- `true` indicates that you don't want obsidian.nvim to manage frontmatter.
+      disable_frontmatter = false,
+
+      -- Optional, alternatively you can customize the frontmatter data.
+      ---@return table
+      note_frontmatter_func = function(note)
+        -- Add the title of the note as an alias.
+        if note.title then
+          note:add_alias(note.title)
+        end
+
+        local out = { id = note.id, aliases = note.aliases, tags = note.tags }
+
+        -- `note.metadata` contains any manually added fields in the frontmatter.
+        -- So here we just make sure those fields are kept in the frontmatter.
+        if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+          for k, v in pairs(note.metadata) do
+            out[k] = v
+          end
+        end
+
+        return out
+      end,
+
+      -- Optional, for templates (see below).
+      -- templates = {                          -- Lewin Robin commented out
+      --   folder = 'templates',
+      --   date_format = '%Y-%m-%d',
+      --   time_format = '%H:%M',
+      --   -- A map for custom variables, the key should be the variable and the value a function
+      --   substitutions = {},
+      -- },
+
+      -- Optional, by default when you use `:ObsidianFollowLink` on a link to an external
+      -- URL it will be ignored but you can customize this behavior here.
+      ---@param url string
+      follow_url_func = function(url)
+        -- Open the URL in the default web browser.
+        vim.fn.jobstart { 'open', url } -- Mac OS
+        -- vim.fn.jobstart({"xdg-open", url})  -- linux
+      end,
+
+      -- Optional, set to true if you use the Obsidian Advanced URI plugin.
+      -- https://github.com/Vinzent03/obsidian-advanced-uri
+      use_advanced_uri = false,
+
+      -- Optional, set to true to force ':ObsidianOpen' to bring the app to the foreground.
+      open_app_foreground = false,
+
+      picker = {
+        -- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', or 'mini.pick'.
+        name = 'telescope.nvim',
+        -- Optional, configure key mappings for the picker. These are the defaults.
+        -- Not all pickers support all mappings.
+        mappings = {
+          -- Create a new note from your query.
+          new = '<C-x>',
+          -- Insert a link to the selected note.
+          insert_link = '<C-l>',
+        },
+      },
+
+      -- Optional, sort search results by "path", "modified", "accessed", or "created".
+      -- The recommend value is "modified" and `true` for `sort_reversed`, which means, for example,
+      -- that `:ObsidianQuickSwitch` will show the notes sorted by latest modified time
+      sort_by = 'modified',
+      sort_reversed = true,
+
+      -- Optional, determines how certain commands open notes. The valid options are:
+      -- 1. "current" (the default) - to always open in the current window
+      -- 2. "vsplit" - to open in a vertical split if there's not already a vertical split
+      -- 3. "hsplit" - to open in a horizontal split if there's not already a horizontal split
+      open_notes_in = 'current',
+
+      -- Optional, define your own callbacks to further customize behavior.
+      callbacks = {
+        -- Runs at the end of `require("obsidian").setup()`.
+        ---@param client obsidian.Client
+        post_setup = function(client) end,
+
+        -- Runs anytime you enter the buffer for a note.
+        ---@param client obsidian.Client
+        ---@param note obsidian.Note
+        enter_note = function(client, note) end,
+
+        -- Runs anytime you leave the buffer for a note.
+        ---@param client obsidian.Client
+        ---@param note obsidian.Note
+        leave_note = function(client, note) end,
+
+        -- Runs right before writing the buffer for a note.
+        ---@param client obsidian.Client
+        ---@param note obsidian.Note
+        pre_write_note = function(client, note) end,
+
+        -- Runs anytime the workspace is set/changed.
+        ---@param client obsidian.Client
+        ---@param workspace obsidian.Workspace
+        post_set_workspace = function(client, workspace) end,
+      },
+
+      -- Optional, configure additional syntax highlighting / extmarks.
+      -- This requires you have `conceallevel` set to 1 or 2. See `:help conceallevel` for more details.
+      ui = {
+        enable = true, -- set to false to disable all additional syntax features
+        update_debounce = 200, -- update delay after a text change (in milliseconds)
+        -- Define how various check-boxes are displayed
+        checkboxes = {
+          -- NOTE: the 'char' value has to be a single character, and the highlight groups are defined below.
+          [' '] = { char = '󰄱', hl_group = 'ObsidianTodo' },
+          ['x'] = { char = '', hl_group = 'ObsidianDone' },
+          ['>'] = { char = '', hl_group = 'ObsidianRightArrow' },
+          ['~'] = { char = '󰰱', hl_group = 'ObsidianTilde' },
+          -- Replace the above with this if you don't have a patched font:
+          -- [" "] = { char = "☐", hl_group = "ObsidianTodo" },
+          -- ["x"] = { char = "✔", hl_group = "ObsidianDone" },
+
+          -- You can also add more custom ones...
+        },
+        -- Use bullet marks for non-checkbox lists.
+        bullets = { char = '•', hl_group = 'ObsidianBullet' },
+        external_link_icon = { char = '', hl_group = 'ObsidianExtLinkIcon' },
+        -- Replace the above with this if you don't have a patched font:
+        -- external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
+        reference_text = { hl_group = 'ObsidianRefText' },
+        highlight_text = { hl_group = 'ObsidianHighlightText' },
+        tags = { hl_group = 'ObsidianTag' },
+        block_ids = { hl_group = 'ObsidianBlockID' },
+        hl_groups = {
+          -- The options are passed directly to `vim.api.nvim_set_hl()`. See `:help nvim_set_hl`.
+          ObsidianTodo = { bold = true, fg = '#f78c6c' },
+          ObsidianDone = { bold = true, fg = '#89ddff' },
+          ObsidianRightArrow = { bold = true, fg = '#f78c6c' },
+          ObsidianTilde = { bold = true, fg = '#ff5370' },
+          ObsidianBullet = { bold = true, fg = '#89ddff' },
+          ObsidianRefText = { underline = true, fg = '#c792ea' },
+          ObsidianExtLinkIcon = { fg = '#c792ea' },
+          ObsidianTag = { italic = true, fg = '#89ddff' },
+          ObsidianBlockID = { italic = true, fg = '#89ddff' },
+          ObsidianHighlightText = { bg = '#75662e' },
+        },
+      },
+
+      -- Specify how to handle attachments.
+      attachments = {
+        -- The default folder to place images in via `:ObsidianPasteImg`.
+        -- If this is a relative path it will be interpreted as relative to the vault root.
+        -- You can always override this per image by passing a full path to the command instead of just a filename.
+        img_folder = 'assets/imgs', -- This is the default
+        -- A function that determines the text to insert in the note when pasting an image.
+        -- It takes two arguments, the `obsidian.Client` and an `obsidian.Path` to the image file.
+        -- This is the default implementation.
+        ---@param client obsidian.Client
+        ---@param path obsidian.Path the absolute path to the image file
+        ---@return string
+        img_text_func = function(client, path)
+          path = client:vault_relative_path(path) or path
+          return string.format('![%s](%s)', path.name, path)
+        end,
+      },
+    },
+  },
+
+  -- { -- This plugin
+  --   'Zeioth/compiler.nvim',
+  --   cmd = { 'CompilerOpen', 'CompilerToggleResults', 'CompilerRedo' },
+  --   dependencies = { 'stevearc/overseer.nvim' },
+  --   opts = {},
+  -- },
+  { -- The task runner we use
+    'stevearc/overseer.nvim',
+    commit = '68a2d344cea4a2e11acfb5690dc8ecd1a1ec0ce0',
+    cmd = { 'CompilerOpen', 'CompilerToggleResults', 'CompilerRedo' },
+    opts = {
+      task_list = {
+        direction = 'bottom',
+        min_height = 25,
+        max_height = 25,
+        default_detail = 1,
+      },
+    },
+  },
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -270,21 +645,21 @@ require('lazy').setup({
   -- after the plugin has been loaded:
   --  config = function() ... end
 
-  { -- Useful plugin to show you pending keybinds.
+  { -- Useful plugin to show you pending keybinds. -- Edited by Lewin Robin
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
-    config = function() -- This is the function that runs, AFTER loading
-      require('which-key').setup()
-
-      -- Document existing key chains
-      require('which-key').register {
-        ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-        ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-        ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-        ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-        ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-      }
-    end,
+    -- config = function() -- This is the function that runs, AFTER loading
+    --   require('which-key').setup()
+    --
+    --   -- Document existing key chains
+    --   require('which-key').register {
+    --     ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
+    --     ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
+    --     ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
+    --     ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
+    --     ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
+    --   }
+    -- end,
   },
 
   -- NOTE: Plugins can specify dependencies.
@@ -365,10 +740,11 @@ require('lazy').setup({
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<C-P>', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+      vim.keymap.set('n', '<C-f>', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
@@ -486,10 +862,12 @@ require('lazy').setup({
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
           map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+          -- map('<C-.>', vim.lsp.buf.code_action, '[C]ode [A]ction') -- This is not working as it is overridded by the last action which is bypressing cotrol and .
+          -- simultainously..
 
           -- Opens a popup that displays documentation about the word under your cursor
           --  See `:help K` for why this keymap
-          map('K', vim.lsp.buf.hover, 'Hover Documentation')
+          map('gh', vim.lsp.buf.hover, 'Hover Documentation')
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header
@@ -501,17 +879,17 @@ require('lazy').setup({
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client.server_capabilities.documentHighlightProvider then
-            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-              buffer = event.buf,
-              callback = vim.lsp.buf.document_highlight,
-            })
-
-            vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-              buffer = event.buf,
-              callback = vim.lsp.buf.clear_references,
-            })
-          end
+          -- if client and client.server_capabilities.documentHighlightProvider then
+          --   vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+          --     buffer = event.buf,
+          --     callback = vim.lsp.buf.document_highlight,
+          --   })
+          --
+          --   vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+          --     buffer = event.buf,
+          --     callback = vim.lsp.buf.clear_references,
+          --   })
+          -- end
         end,
       })
 
@@ -533,9 +911,15 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {
+          capabilities = capabilities,
+          cmd = {
+            'rustup',
+            'run',
+            'stable',
+            'rust-analyzer',
+          },
+        },
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -682,7 +1066,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<tab>'] = cmp.mapping.confirm { select = true },
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
@@ -717,19 +1101,48 @@ require('lazy').setup({
     end,
   },
 
-  { -- You can easily change to a different colorscheme.
+  -- { -- You can easily change to a different colorscheme.         --Edited by Lewin Robin
+  --   -- Change the name of the colorscheme plugin below, and then
+  --   -- change the command in the config to whatever the name of that colorscheme is
+  --   --
+  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`
+  --   'folke/tokyonight.nvim',
+  --   priority = 1000, -- make sure to load this before all the other start plugins
+  --   init = function()
+  --     -- Load the colorscheme here.
+  --     -- Like many other themes, this one has different styles, and you could load
+  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+  --     vim.cmd.colorscheme 'tokyonight-night'
+  --     -- You can configure highlights by doing something like
+  --     vim.cmd.hi 'Comment gui=none'
+  --   end,
+  -- },
+  {
+    'folke/tokyonight.nvim',
+    'rebelot/kanagawa.nvim',
+    -- 'projekt0n/github-nvim-theme.nvim',
+    'shaunsingh/nord.nvim',
+    'EdenEast/nightfox.nvim',
+    'navarasu/onedark.nvim',
+    'tanvirtin/monokai.nvim',
+    'rose-pine/neovim',
+    'catppuccin/nvim',
+    'tiagovla/tokyodark.nvim',
+    'Mofiqul/vscode.nvim',
+    'loctvl842/monokai-pro.nvim',
+  },
+  { -- You can easily change to a different colorscheme.         --Edited by Lewin Robin
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`
-    'folke/tokyonight.nvim',
+    'Mofiqul/vscode.nvim',
     priority = 1000, -- make sure to load this before all the other start plugins
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
-
+      vim.cmd.colorscheme 'vscode'
       -- You can configure highlights by doing something like
       vim.cmd.hi 'Comment gui=none'
     end,
@@ -842,3 +1255,336 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+-- function RunCommandBasedOnFileType()
+--   -- Get the current buffer name
+--   local filename = vim.fn.expand '%:t'
+--
+--   -- Extract the file extension
+--   local file_extension = vim.fn.fnamemodify(filename, ':e')
+--
+--   -- Define commands based on file extensions
+--   local commands = {
+--     ['rs'] = 'cargo run',
+--     -- ['vim'] = 'vim_command',
+--     -- Add more file extensions and commands as needed
+--   }
+--
+--   -- Get the command associated with the file extension
+--   local command_to_run = commands[file_extension]
+--
+--   -- Check if a command is associated with the file extension
+--   if command_to_run then
+
+--     vim.cmd(command_to_run)
+--   else
+--     print 'No command defined for this file type'
+--   end
+-- end
+--
+-- -- Map a key to run the function
+-- -- vim.api.nvim_set_keymap('n', '<C-r>r', ':lua RunCommandBasedOnFileType()<CR>', { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>R', RunCommandBasedOnFileType())
+
+--NOTE: Obsidian Keymaps
+vim.opt.conceallevel = 2
+vim.keymap.set('n', '<leader>obss', ':e obs.md<CR>:ObsidianSearch<CR>')
+vim.keymap.set('n', '<leader>obsn', ':ObsidianSearch<CR>')
+vim.keymap.set('n', '<leader>obso', ':e obs.md<CR>:ObsidianOpen<CR>')
+
+-- NOTE: Harpoon configs
+local mark = require 'harpoon.mark'
+local ui = require 'harpoon.ui'
+vim.keymap.set('n', '<leader>a', mark.add_file, { desc = 'Add file to Harpoon' })
+vim.keymap.set('n', '<leader>hp', ui.toggle_quick_menu, { desc = 'Open Harpoon UI' })
+
+vim.keymap.set('n', '<leader>1', function()
+  ui.nav_file(1)
+end)
+vim.keymap.set('n', '<leader>2', function()
+  ui.nav_file(2)
+end)
+vim.keymap.set('n', '<leader>3', function()
+  ui.nav_file(3)
+end)
+vim.keymap.set('n', '<leader>4', function()
+  ui.nav_file(4)
+end)
+vim.keymap.set('n', '<leader>5', function()
+  ui.nav_file(5)
+end)
+vim.keymap.set('n', '<leader>6', function()
+  ui.nav_file(6)
+end)
+vim.keymap.set('n', '<leader>7', function()
+  ui.nav_file(7)
+end)
+vim.keymap.set('n', '<leader>8', function()
+  ui.nav_file(8)
+end)
+vim.keymap.set('n', '<leader>9', function()
+  ui.nav_file(9)
+end)
+require('telescope').load_extension 'harpoon'
+vim.keymap.set('n', '<leader>hf', ':Telescope harpoon marks<CR>', { desc = 'Harpoon UI in Telescope' })
+
+-- NOTE: Terminal Keymaps
+vim.keymap.set('t', '<C-p>', '<up>')
+vim.keymap.set('t', '<C-n>', '<down>')
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
+
+-- NOTE: Oil Config
+vim.keymap.set('n', '<C-b>', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+local oil = require 'oil'
+oil.setup {
+  -- Oil will take over directory buffers (e.g. `vim .` or `:e src/`)
+  -- Set to false if you still want to use netrw.
+  default_file_explorer = true,
+  -- Id is automatically added at the beginning, and name at the end
+  -- See :help oil-columns
+  columns = {
+    'icon',
+    -- "permissions",
+    -- "size",
+    -- "mtime",
+  },
+  -- Buffer-local options to use for oil buffers
+  buf_options = {
+    buflisted = false,
+    bufhidden = 'hide',
+  },
+  -- Window-local options to use for oil buffers
+  win_options = {
+    wrap = false,
+    signcolumn = 'no',
+    cursorcolumn = false,
+    foldcolumn = '0',
+    spell = false,
+    list = false,
+    conceallevel = 3,
+    concealcursor = 'nvic',
+  },
+  -- Send deleted files to the trash instead of permanently deleting them (:help oil-trash)
+  delete_to_trash = false,
+  -- Skip the confirmation popup for simple operations (:help oil.skip_confirm_for_simple_edits)
+  skip_confirm_for_simple_edits = false,
+  -- Selecting a new/moved/renamed file or directory will prompt you to save changes first
+  -- (:help prompt_save_on_select_new_entry)
+  prompt_save_on_select_new_entry = true,
+  -- Oil will automatically delete hidden buffers after this delay
+  -- You can set the delay to false to disable cleanup entirely
+  -- Note that the cleanup process only starts when none of the oil buffers are currently displayed
+  cleanup_delay_ms = 2000,
+  lsp_file_methods = {
+    -- Time to wait for LSP file operations to complete before skipping
+    timeout_ms = 1000,
+    -- Set to true to autosave buffers that are updated with LSP willRenameFiles
+    -- Set to "unmodified" to only save unmodified buffers
+    autosave_changes = false,
+  },
+  -- Constrain the cursor to the editable parts of the oil buffer
+  -- Set to `false` to disable, or "name" to keep it on the file names
+  constrain_cursor = 'editable',
+  -- Set to true to watch the filesystem for changes and reload oil
+  experimental_watch_for_changes = false,
+  -- Keymaps in oil buffer. Can be any value that `vim.keymap.set` accepts OR a table of keymap
+  -- options with a `callback` (e.g. { callback = function() ... end, desc = "", mode = "n" })
+  -- Additionally, if it is a string that matches "actions.<name>",
+  -- it will use the mapping at require("oil.actions").<name>
+  -- Set to `false` to remove a keymap
+  -- See :help oil-actions for a list of all available actions
+
+  keymaps = { -- Commented by Lewin Robin as it added many keymaps
+    ['g?'] = 'actions.show_help',
+    ['<CR>'] = 'actions.select',
+    ['<C-s>'] = 'actions.select_vsplit',
+    ['<C-h>'] = 'actions.select_split',
+    ['<C-t>'] = 'actions.select_tab',
+    -- ['<C-p>'] = 'actions.preview',     -- Lewin Robin -- commented because it was clashing with Telescope.
+    ['<C-p>'] = false, -- Lewin Robin -- commented because it was clashing with Telescope.
+    ['<C-c>'] = 'actions.close',
+    ['<C-l>'] = 'actions.refresh',
+    ['-'] = 'actions.parent',
+    ['_'] = 'actions.open_cwd',
+    ['`'] = 'actions.cd',
+    ['~'] = 'actions.tcd',
+    ['gs'] = 'actions.change_sort',
+    ['gx'] = 'actions.open_external',
+    ['g.'] = 'actions.toggle_hidden',
+    ['g\\'] = 'actions.toggle_trash',
+  },
+
+  -- Set to false to disable all of the above keymaps
+  -- use_default_keymaps = true,  -- Lewin Robin
+  view_options = {
+    -- Show files and directories that start with "."
+    show_hidden = false,
+    -- This function defines what is considered a "hidden" file
+    is_hidden_file = function(name, bufnr)
+      return vim.startswith(name, '.')
+    end,
+    -- This function defines what will never be shown, even when `show_hidden` is set
+    is_always_hidden = function(name, bufnr)
+      return false
+    end,
+    -- Sort file names in a more intuitive order for humans. Is less performant,
+    -- so you may want to set to false if you work with large directories.
+    natural_order = true,
+    sort = {
+      -- sort order can be "asc" or "desc"
+      -- see :help oil-columns to see which columns are sortable
+      { 'type', 'asc' },
+      { 'name', 'asc' },
+    },
+  },
+  -- Extra arguments to pass to SCP when moving/copying files over SSH
+  extra_scp_args = {},
+  -- EXPERIMENTAL support for performing file operations with git
+  git = {
+    -- Return true to automatically git add/mv/rm files
+    add = function(path)
+      return false
+    end,
+    mv = function(src_path, dest_path)
+      return false
+    end,
+    rm = function(path)
+      return false
+    end,
+  },
+  -- Configuration for the floating window in oil.open_float
+  float = {
+    -- Padding around the floating window
+    padding = 2,
+    max_width = 0,
+    max_height = 0,
+    border = 'rounded',
+    win_options = {
+      winblend = 0,
+    },
+    -- This is the config that will be passed to nvim_open_win.
+    -- Change values here to customize the layout
+    override = function(conf)
+      return conf
+    end,
+  },
+  -- Configuration for the actions floating preview window
+  preview = {
+    -- Width dimensions can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
+    -- min_width and max_width can be a single value or a list of mixed integer/float types.
+    -- max_width = {100, 0.8} means "the lesser of 100 columns or 80% of total"
+    max_width = 0.9,
+    -- min_width = {40, 0.4} means "the greater of 40 columns or 40% of total"
+    min_width = { 40, 0.4 },
+    -- optionally define an integer/float for the exact width of the preview window
+    width = nil,
+    -- Height dimensions can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
+    -- min_height and max_height can be a single value or a list of mixed integer/float types.
+    -- max_height = {80, 0.9} means "the lesser of 80 columns or 90% of total"
+    max_height = 0.9,
+    -- min_height = {5, 0.1} means "the greater of 5 columns or 10% of total"
+    min_height = { 5, 0.1 },
+    -- optionally define an integer/float for the exact height of the preview window
+    height = nil,
+    border = 'rounded',
+    win_options = {
+      winblend = 0,
+    },
+    -- Whether the preview window is automatically updated when the cursor is moved
+    update_on_cursor_moved = true,
+  },
+  -- Configuration for the floating progress window
+  progress = {
+    max_width = 0.9,
+    min_width = { 40, 0.4 },
+    width = nil,
+    max_height = { 10, 0.9 },
+    min_height = { 5, 0.1 },
+    height = nil,
+    border = 'rounded',
+    minimized_border = 'none',
+    win_options = {
+      winblend = 0,
+    },
+  },
+  -- Configuration for the floating SSH window
+  ssh = {
+    border = 'rounded',
+  },
+  -- Configuration for the floating keymaps help window
+  keymaps_help = {
+    border = 'rounded',
+  },
+}
+
+vim.keymap.set('n', '<leader>tc', ':Telescope colorscheme<CR>')
+vim.keymap.set('n', '<leader>tr', ':lua RemoveBackGround()<CR>')
+vim.keymap.set('n', '<leader>fl', ':flutter')
+vim.keymap.set('n', '<leader>fr', ':FlutterReload<CR>')
+
+-- Disabled line wrapping in nvim
+vim.opt.wrap = false
+require 'keymaps'
+
+-- NOTE remove background
+function RemoveBackGround()
+  -- Almost all of the nvim
+  vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
+  -- Almost all floating windows in nvim
+  vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'none' })
+  -- line which extends the entire line when a cursor is on it.
+  vim.api.nvim_set_hl(0, 'CursorLine', { bg = 'none' })
+  -- Line numbers
+  vim.api.nvim_set_hl(0, 'LineNr', { bg = 'none' })
+  -- Line numbers of the cursor in cursor is on
+  vim.api.nvim_set_hl(0, 'CursorLineNr', { bg = 'none', fg = 'yellow' })
+  vim.api.nvim_set_hl(0, 'Files', { bg = 'none' })
+  --one Split screens i gues
+  vim.api.nvim_set_hl(0, 'Splits', { bg = 'none' })
+  vim.api.nvim_set_hl(0, 'TelescopeNormal', { bg = 'none' })
+  vim.api.nvim_set_hl(0, 'TelescopePreviewNormal', { bg = 'none' })
+  vim.api.nvim_set_hl(0, 'SignColumn', { bg = 'none' })
+
+  -- vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Visual', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Directory', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'ErrorMsg', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'IncSearch', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Search', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'StatusLine', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'TabLine', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Title', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'VertSplit', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'WarningMsg', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Comment', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Constant', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Identifier', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Keyword', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Number', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'String', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Type', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'DiffAdd', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'DiffChange', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'DiffDelete', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'DiffText', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'Cursor', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'CursorLine', { bg = 'none' })
+  -- vim.api.nvim_set_hl(0, 'CursorColumn', { bg = 'none' })
+end
+
+RemoveBackGround()
+-- require('lspconfig').jdtls.setup {
+--   on_attach = on_attach_function,
+--   capabilities = capabilities,
+--   root_dir = function(fname)
+--     -- Your logic to determine root directory
+--     return vim.fn.getcwd() -- Example: Using current working directory
+--   end,
+-- }
+
+-- vim.opt.formatoptions = vim.opt.formatoptions:gsub('c', '')
+-- vim.opt_local.formatoptions:remove { 'r', 'o' }
+-- vim.opt.formatoptions = vim.opt.formatoptions:gsub('cro', '')
+-- vim.cmd 'set formatoptions-=cro'
+-- vim.opt.formatoptions = 'cro'
+vim.keymap.set('n', '<leader>fc', ':set formatoptions-=cro<CR>', { desc = 'auto comment off' })
