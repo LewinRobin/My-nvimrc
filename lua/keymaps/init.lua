@@ -34,18 +34,15 @@ vim.keymap.set('n', 'Q', '<nop>')
 vim.keymap.set('n', '<C-f>', '<cmd>silent !tmux neww tmux-sessionizer<CR>')
 vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
 
-vim.keymap.set('n', '<leader>ej', '<cmd>cnext<CR>zz')
+vim.keymap.set('n', '<leader>e', '<cmd>cnext<CR>zz')
 vim.keymap.set('n', '<leader>E', '<cmd>cprev<CR>zz')
-vim.keymap.set('n', '<leader>k', '<cmd>lnext<CR>zz')
-vim.keymap.set('n', '<leader>j', '<cmd>lprev<CR>zz')
+vim.keymap.set('n', '<leader>k', '<cmd>lprev<CR>zz')
+vim.keymap.set('n', '<leader>j', '<cmd>lnext<CR>zz')
 
 vim.keymap.set('n', '<leader>S', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 vim.keymap.set('n', '<leader>x', '<cmd>!chmod +x %<CR>', { silent = true })
 
 vim.keymap.set('n', '<leader>ee', 'oif err != nil {<CR>}<Esc>Oreturn err<Esc>')
-
-vim.keymap.set('n', '<leader>vpp', '<cmd>e ~/.dotfiles/nvim/.config/nvim/lua/theprimeagen/packer.lua<CR>')
-vim.keymap.set('n', '<leader>mr', '<cmd>CellularAutomaton make_it_rain<CR>')
 
 -- vim.keymap.set("n", "<leader><leader>", function()
 --     vim.cmd("so")
@@ -59,8 +56,10 @@ vim.keymap.set('n', '<C-q>', '<C-w>q')
 -- vim.keymap.set('n', '<leader>l', '<cmd>bNext<CR>')
 vim.keymap.set('n', '<leader>=', 'gg=G')
 vim.keymap.set('n', '<leader>G', vim.cmd.UndotreeToggle)
-vim.keymap.set('n', '<leader>`v', ':cd %:p:h<CR><C-w>v:term pwsh<CR>iclear<CR><C-\\><C-n>')
-vim.keymap.set('n', '<leader>`s', ':cd %:p:h<CR><C-w>s:term pwsh<CR><C-\\><C-n><CMD>resize -3<CR><CMD>resize -3<CR><CMD>resize -3<CR>')
+-- vim.keymap.set('n', '<leader>`v', ':cd %:p:h<CR><C-w>v:term pwsh<CR>iclear<CR><C-\\><C-n>')
+-- vim.keymap.set('n', '<leader>`s', ':cd %:p:h<CR><C-w>s:term pwsh<CR><C-\\><C-n><CMD>resize -3<CR><CMD>resize -3<CR><CMD>resize -3<CR>')
+vim.keymap.set('n', '<leader>`v', ':cd %:p:h<CR><C-w>v:term<CR>iclear<CR><C-\\><C-n>')
+vim.keymap.set('n', '<leader>`s', ':cd %:p:h<CR><C-w>s:term<CR>iclear<CR><C-\\><C-n><CMD>resize -15<CR>')
 -- vim.keymap.set('n', '<C-b>', ':Ex<CR>') -- Lewin Robin // since oil is here i have commented this.
 vim.opt.colorcolumn = '169'
 -- vim.keymap.set('n', '<C-Tab>', ':bNext<CR>')
@@ -78,3 +77,33 @@ vim.keymap.set('n', '<A-j>', '<CMD>resize +3<CR>', { noremap = true, silent = tr
 
 -- Change directory
 vim.keymap.set('n', '<leader>cd', ':cd %:h<CR>', { desc = '[C]hange [D]irectory' })
+
+-- React keymaps
+vim.keymap.set('n', '<leader>fc', ':set formatoptions-=cro<CR>', { desc = 'auto comment off' })
+vim.keymap.set('n', '<leader>gcc', 'I{/*<Esc>A*/}<Esc>', { desc = 'React Comment' })
+vim.keymap.set('n', '<leader>gcu', 'I<Esc>lxxx$xxx<Esc>', { desc = 'React Uncomment' })
+vim.keymap.set('v', '<leader>gcc', 'O<Esc>i{/*<Esc>gvOlll<Esc>a*/}<Esc>', { desc = 'React Comment' })
+vim.keymap.set('v', '<leader>gcu', 'O<Esc>lxxxgvO<Esc>xxx<Esc>', { desc = 'React Uncomment' })
+
+-- GDB Keymaps
+-- vim.keymap.set(
+--   'n',
+--   '<leader>gdbv',
+--   ':!cd %:h<CR>:!gcc % -g<CR><C-W>v:term<CR>igdb ./a.exe<CR>break main<CR>run<CR>define hook-next<CR>info locals<CR>end<CR>define hook-step<CR>info locals<CR>end<CR>define hook-continue<CR>info locals<CR>end<CR>',
+--   { desc = 'gdb sidescreen' }
+-- )
+vim.keymap.set('n', '<leader>gdbv', '<C-W>v:term<CR>imake gdb<CR>gdb ./a.exe<CR>break main<CR>run<CR>', { desc = 'gdb sidescreen' })
+-- vim.keymap.set(
+--   'n',
+--   '<leader>gdbf',
+--   ':!cd %:h<CR>:!gcc % -g<CR>:term<CR>igdb ./a.exe<CR>break 1<CR>run<CR>define hook-next<CR>info locals<CR>end<CR>define hook-step<CR>info locals<CR>end<CR>define hook-continue<CR>info locals<CR>end<CR>',
+--   { desc = 'gdb fullscreen' }
+-- )
+vim.keymap.set('n', '<leader>gdbf', ':term<CR>imake gdb<CR>gdb ./a.exe<CR>break main<CR>run<CR>', { desc = 'gdb fullscreen' })
+vim.keymap.set('n', '<leader>gdbf', ':term<CR>imake gdb<CR>gdb ./a.exe<CR>break main<CR>run<CR>', { desc = 'gdb fullscreen' })
+
+vim.keymap.set('n', '<leader>/', ':%s/', { desc = 'Find and Replace' })
+vim.keymap.set('v', '<leader>/', ':s/', { desc = 'Find and Replace' })
+
+vim.keymap.set('n', '<leader>*', 'yiW/<C-r>0<CR>', { desc = 'Select entire word underneath cursor' })
+vim.keymap.set('v', '<leader>*', 'y/<C-r>0<CR>', { desc = 'Select entire word underneath cursor' })
