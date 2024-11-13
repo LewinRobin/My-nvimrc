@@ -610,7 +610,12 @@ require('lazy').setup({
   --    require('Comment').setup({})
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
+  { 'numToStr/Comment.nvim', opts = {
+    mappings = {
+      extra = true,
+      basic = true,
+    },
+  } },
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following lua:
@@ -1151,43 +1156,43 @@ require('lazy').setup({
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
-  { -- Collection of various small independent plugins/modules
-    'echasnovski/mini.nvim',
-    config = function()
-      -- Better Around/Inside textobjects
-      --
-      -- Examples:
-      --  - va)  - [V]isually select [A]round [)]paren
-      --  - yinq - [Y]ank [I]nside [N]ext [']quote
-      --  - ci'  - [C]hange [I]nside [']quote
-      require('mini.ai').setup { n_lines = 500 }
-
-      -- Add/delete/replace surroundings (brackets, quotes, etc.)
-      --
-      -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-      -- - sd'   - [S]urround [D]elete [']quotes
-      -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
-
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
-
-      -- ... and there is more!
-      --  Check out: https://github.com/echasnovski/mini.nvim
-    end,
-  },
+  -- { -- Collection of various small independent plugins/modules       -- Edited by Lewin Robin
+  --   'echasnovski/mini.nvim',
+  --   config = function()
+  --     -- Better Around/Inside textobjects
+  --     --
+  --     -- Examples:
+  --     --  - va)  - [V]isually select [A]round [)]paren
+  --     --  - yinq - [Y]ank [I]nside [N]ext [']quote
+  --     --  - ci'  - [C]hange [I]nside [']quote
+  --     require('mini.ai').setup { n_lines = 500 }
+  --
+  --     -- Add/delete/replace surroundings (brackets, quotes, etc.)
+  --     --
+  --     -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
+  --     -- - sd'   - [S]urround [D]elete [']quotes
+  --     -- - sr)'  - [S]urround [R]eplace [)] [']
+  --     require('mini.surround').setup()
+  --
+  --     -- Simple and easy statusline.
+  --     --  You could remove this setup call if you don't like it,
+  --     --  and try some other statusline plugin
+  --     local statusline = require 'mini.statusline'
+  --     -- set use_icons to true if you have a Nerd Font
+  --     statusline.setup { use_icons = vim.g.have_nerd_font }
+  --
+  --     -- You can configure sections in the statusline by overriding their
+  --     -- default behavior. For example, here we set the section for
+  --     -- cursor location to LINE:COLUMN
+  --     ---@diagnostic disable-next-line: duplicate-set-field
+  --     statusline.section_location = function()
+  --       return '%2l:%-2v'
+  --     end
+  --
+  --     -- ... and there is more!
+  --     --  Check out: https://github.com/echasnovski/mini.nvim
+  --   end,
+  -- },
 
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -1365,7 +1370,7 @@ oil.setup {
     concealcursor = 'nvic',
   },
   -- Send deleted files to the trash instead of permanently deleting them (:help oil-trash)
-  delete_to_trash = false,
+  delete_to_trash = true,
   -- Skip the confirmation popup for simple operations (:help oil.skip_confirm_for_simple_edits)
   skip_confirm_for_simple_edits = false,
   -- Selecting a new/moved/renamed file or directory will prompt you to save changes first
@@ -1525,54 +1530,8 @@ vim.keymap.set('n', '<leader>fr', ':FlutterReload<CR>')
 -- Disabled line wrapping in nvim
 vim.opt.wrap = false
 require 'keymaps'
+require 'removeBackground'
 
--- NOTE remove background
-function RemoveBackGround()
-  -- Almost all of the nvim
-  vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
-  -- Almost all floating windows in nvim
-  vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'none' })
-  -- line which extends the entire line when a cursor is on it.
-  vim.api.nvim_set_hl(0, 'CursorLine', { bg = 'none' })
-  -- Line numbers
-  vim.api.nvim_set_hl(0, 'LineNr', { bg = 'none' })
-  -- Line numbers of the cursor in cursor is on
-  vim.api.nvim_set_hl(0, 'CursorLineNr', { bg = 'none', fg = 'yellow' })
-  vim.api.nvim_set_hl(0, 'Files', { bg = 'none' })
-  --one Split screens i gues
-  vim.api.nvim_set_hl(0, 'Splits', { bg = 'none' })
-  vim.api.nvim_set_hl(0, 'TelescopeNormal', { bg = 'none' })
-  vim.api.nvim_set_hl(0, 'TelescopePreviewNormal', { bg = 'none' })
-  vim.api.nvim_set_hl(0, 'SignColumn', { bg = 'none' })
-
-  -- vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Visual', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Directory', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'ErrorMsg', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'IncSearch', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Search', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'StatusLine', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'TabLine', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Title', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'VertSplit', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'WarningMsg', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Comment', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Constant', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Identifier', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Keyword', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Number', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'String', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Type', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'DiffAdd', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'DiffChange', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'DiffDelete', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'DiffText', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'Cursor', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'CursorLine', { bg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'CursorColumn', { bg = 'none' })
-end
-
-RemoveBackGround()
 -- require('lspconfig').jdtls.setup {
 --   on_attach = on_attach_function,
 --   capabilities = capabilities,
@@ -1585,6 +1544,5 @@ RemoveBackGround()
 -- vim.opt.formatoptions = vim.opt.formatoptions:gsub('c', '')
 -- vim.opt_local.formatoptions:remove { 'r', 'o' }
 -- vim.opt.formatoptions = vim.opt.formatoptions:gsub('cro', '')
--- vim.cmd 'set formatoptions-=cro'
+-- im.cmd 'set formatoptions-=cro'
 -- vim.opt.formatoptions = 'cro'
-vim.keymap.set('n', '<leader>fc', ':set formatoptions-=cro<CR>', { desc = 'auto comment off' })
