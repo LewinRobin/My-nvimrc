@@ -107,3 +107,8 @@ vim.keymap.set('v', '<leader>/', ':s/', { desc = 'Find and Replace' })
 
 vim.keymap.set('n', '<leader>*', 'yiW/<C-r>0<CR>', { desc = 'Select entire word underneath cursor' })
 vim.keymap.set('v', '<leader>*', 'y/<C-r>0<CR>', { desc = 'Select entire word underneath cursor' })
+
+vim.keymap.set('n', '<leader>tc', ':Telescope colorscheme<CR>')
+vim.keymap.set('n', '<leader>tr', ':lua RemoveBackGround()<CR>')
+vim.keymap.set('n', '<leader>fl', ':flutter')
+vim.keymap.set('n', '<leader>fr', ':FlutterReload<CR>')
