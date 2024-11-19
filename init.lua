@@ -241,7 +241,6 @@ require('lazy').setup({
   'nvim-treesitter/playground',
   'tpope/vim-fugitive',
   'ThePrimeagen/harpoon',
-  'ThePrimeagen/harpoon',
   'stevearc/oil.nvim',
   -- 'walcht/neovim-unity',
   'nvim-java',
@@ -1521,12 +1520,25 @@ oil.setup {
     border = 'rounded',
   },
 }
-
-vim.keymap.set('n', '<leader>tc', ':Telescope colorscheme<CR>')
-vim.keymap.set('n', '<leader>tr', ':lua RemoveBackGround()<CR>')
-vim.keymap.set('n', '<leader>fl', ':flutter')
-vim.keymap.set('n', '<leader>fr', ':FlutterReload<CR>')
-
+local util = require 'lspconfig.util'
+local lspconfig = require 'lspconfig'
+lspconfig.clangd.setup {
+  cmd = { 'clangd', '--background-index', '--clang-tidy', '--log=verbose' },
+  filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda', 'proto' },
+  init_options = {
+    fallbackFlags = { '-std=c++17' },
+  },
+  root_dir = function(fname)
+    return util.root_pattern(
+      '.clangd',
+      '.clang-tidy',
+      '.clang-format',
+      'compile_commands.json',
+      'compile_flags.txt',
+      'configure.ac' -- AutoTools
+    )(fname) or util.find_git_ancestor(fname)
+  end,
+}
 -- Disabled line wrapping in nvim
 vim.opt.wrap = false
 require 'keymaps'
