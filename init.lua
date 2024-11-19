@@ -1544,6 +1544,7 @@ vim.opt.wrap = false
 require 'keymaps'
 require 'removeBackground'
 
+--
 -- require('lspconfig').jdtls.setup {
 --   on_attach = on_attach_function,
 --   capabilities = capabilities,
