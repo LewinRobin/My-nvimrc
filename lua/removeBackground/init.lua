@@ -3,7 +3,7 @@ function RemoveBackGround()
   -- Almost all of the nvim
   vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
   -- Almost all floating windows in nvim
-  vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'none' })
+  vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'none' }) --hovering information uses these.
   -- line which extends the entire line when a cursor is on it.
   vim.api.nvim_set_hl(0, 'CursorLine', { bg = 'none' })
   -- Line numbers
