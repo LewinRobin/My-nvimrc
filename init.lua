@@ -1,4 +1,4 @@
---[[
+--[[
  __       ___________    __    ____  __  .__   __.    .______        ______   .______    __  .__   __. 
 |  |     |   ____\   \  /  \  /   / |  | |  \ |  |    |   _  \      /  __  \  |   _  \  |  | |  \ |  | 
 |  |     |  |__   \   \/    \/   /  |  | |   \|  |    |  |_)  |    |  |  |  | |  |_)  | |  | |   \|  | 
@@ -156,7 +156,7 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 25
+vim.opt.scrolloff = 40
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -209,12 +209,11 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
-
 --settings for csv.vim  to work
-vim.cmd([[
+vim.cmd [[
   filetype plugin on
   :let g:csv_delim=','
-]])
+]]
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -250,9 +249,9 @@ require('lazy').setup({
   'chrisbra/csv.vim',
   'stevearc/oil.nvim',
   -- 'walcht/neovim-unity',
-  'nvim-java',
+  -- 'nvim-java',
   -- 'norcalli/nvim-colorizer.lua',
-  'mg979/vim-visual-multi',
+  -- 'mg979/vim-visual-multi',
   -- {
   --   'mfussenegger/nvim-dap',
   --   dependencies = {
@@ -1065,7 +1064,7 @@ require('lazy').setup({
       -- Required.
       'nvim-lua/plenary.nvim',
       -- Bellow two dependnecies where added by me - Lewin Robin
-      'htsh7th/nvim-cmp',
+      'hrsh7th/nvim-cmp',
       'nvim-telescope/telescope.nvim',
 
       -- see below for full list of optional dependencies 👇
@@ -1095,7 +1094,7 @@ require('lazy').setup({
 
       daily_notes = {
         -- Optional, if you keep daily notes in a separate directory.
-        folder = 'notes/dailies',
+        folder = 'Dailies',
         -- Optional, if you want to change the date format for the ID of daily notes.
         date_format = '%Y-%m-%d',
         -- Optional, if you want to change the date format of the default alias of daily notes.
@@ -1236,7 +1235,8 @@ require('lazy').setup({
       ---@param url string
       follow_url_func = function(url)
         -- Open the URL in the default web browser.
-        vim.fn.jobstart { 'open', url } -- Mac OS
+        -- vim.fn.jobstart { 'open', url } -- Mac OS
+        vim.fn.jobstart { 'msedge', url } -- Windows
         -- vim.fn.jobstart({"xdg-open", url})  -- linux
       end,
 
@@ -1360,6 +1360,68 @@ require('lazy').setup({
       },
     },
   },
+  -- {
+  --   'yetone/avante.nvim',
+  --   event = 'VeryLazy',
+  --   version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
+  --   opts = {
+  --     -- add any opts here
+  --     -- for example
+  --     -- provider = "openai",
+  --     -- openai = {
+  --     --   endpoint = "https://api.openai.com/v1",
+  --     --   model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+  --     --   timeout = 30000, -- timeout in milliseconds
+  --     --   temperature = 0, -- adjust if needed
+  --     --   max_tokens = 4096,
+  --     provider = 'gemini',
+  --     openai = {
+  --       model = 'gemini-1.5-flash-latest',
+  --     },
+  --   },
+  --   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+  --   -- build = "make",
+  --   build = 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false', -- for windows
+  --   dependencies = {
+  --     'nvim-treesitter/nvim-treesitter',
+  --     'stevearc/dressing.nvim',
+  --     'nvim-lua/plenary.nvim',
+  --     'MunifTanjim/nui.nvim',
+  --     --- The below dependencies are optional,
+  --     'echasnovski/mini.pick', -- for file_selector provider mini.pick
+  --     'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
+  --     'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+  --     'ibhagwan/fzf-lua', -- for file_selector provider fzf
+  --     'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
+  --     'zbirenbaum/copilot.lua', -- for providers='copilot'
+  --     {
+  --       -- support for image pasting
+  --       'HakonHarnes/img-clip.nvim',
+  --       event = 'VeryLazy',
+  --       opts = {
+  --         -- recommended settings
+  --         default = {
+  --           embed_image_as_base64 = false,
+  --           prompt_for_file_name = false,
+  --           drag_and_drop = {
+  --             insert_mode = true,
+  --           },
+  --           -- required for Windows users
+  --           use_absolute_path = true,
+  --         },
+  --       },
+  --     },
+  --     {
+  --       -- Make sure to set this up properly if you have lazy=true
+  --       'MeanderingProgrammer/render-markdown.nvim',
+  --       opts = {
+  --         file_types = { 'markdown', 'Avante' },
+  --       },
+  --       ft = { 'markdown', 'Avante' },
+  --     },
+  --   },
+  -- },
+  -- { 'Exafunction/codeium.vim', },
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
@@ -1417,9 +1479,10 @@ require('lazy').setup({
 
 --NOTE: Obsidian Keymaps
 vim.opt.conceallevel = 2
-vim.keymap.set('n', '<leader>obss', ':e obs.md<CR>:ObsidianSearch<CR>')
+vim.keymap.set('n', '<leader>obss', ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianSearch<CR>')
+vim.keymap.set('n', '<leader>obst', ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianToday<CR>')
 vim.keymap.set('n', '<leader>obsn', ':ObsidianSearch<CR>')
-vim.keymap.set('n', '<leader>obso', ':e obs.md<CR>:ObsidianOpen<CR>')
+vim.keymap.set('n', '<leader>obso', ':ObsidianOpen<CR>')
 
 -- NOTE: Harpoon configs
 local mark = require 'harpoon.mark'
@@ -1547,7 +1610,7 @@ oil.setup {
   -- use_default_keymaps = true,  -- Lewin Robin
   view_options = {
     -- Show files and directories that start with "."
-    show_hidden = false,
+    show_hidden = true,
     -- This function defines what is considered a "hidden" file
     is_hidden_file = function(name, bufnr)
       return vim.startswith(name, '.')
@@ -1666,8 +1729,8 @@ lspconfig.clangd.setup {
 }
 -- Disabled line wrapping in nvim
 vim.opt.wrap = false
-require 'keymaps'
 require 'removeBackground'
+require 'keymaps'
 
 -- require('lspconfig').jdtls.setup {
 --   on_attach = on_attach_function,
@@ -1683,4 +1746,3 @@ require 'removeBackground'
 -- vim.opt.formatoptions = vim.opt.formatoptions:gsub('cro', '')
 -- im.cmd 'set formatoptions-=cro'
 -- vim.opt.formatoptions = 'cro'
-  

@@ -29,8 +29,8 @@ vim.keymap.set('n', '<leader>j', '<cmd>lnext<CR>zz')
 vim.keymap.set('n', '<leader>S', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gIc<Left><Left><Left><Left>]])
 vim.keymap.set('n', '<leader>x', '<cmd>!chmod +x %<CR>', { silent = true })
 
-vim.keymap.set("n", '<C-z>', "u")
-vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
+vim.keymap.set('n', '<C-z>', 'u')
+vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
 
 --split screen navigation
 vim.keymap.set('n', '<C-j>', '<C-w>j')
@@ -42,8 +42,10 @@ vim.keymap.set('n', '<leader>=', 'gg=G<C-o>')
 vim.keymap.set('n', '<leader>G', vim.cmd.UndotreeToggle)
 -- vim.keymap.set('n', '<leader>`v', ':cd %:p:h<CR><C-w>v:term pwsh<CR>iclear<CR><C-\\><C-n>')
 -- vim.keymap.set('n', '<leader>`s', ':cd %:p:h<CR><C-w>s:term pwsh<CR><C-\\><C-n><CMD>resize -3<CR><CMD>resize -3<CR><CMD>resize -3<CR>')
-vim.keymap.set('n', '<leader>`v', ':cd %:p:h<CR><C-w>v:term<CR>iclear<CR>ci<CR><C-\\><C-n>')
-vim.keymap.set('n', '<leader>`s', ':cd %:p:h<CR><C-w>s:term<CR>iclear<CR>ci<CR><C-\\><C-n><CMD>resize -15<CR>')
+--
+
+
+
 -- vim.keymap.set('n', '<C-b>', ':Ex<CR>') -- Lewin Robin // since oil is here i have commented this.
 vim.opt.colorcolumn = '169'
 -- vim.keymap.set('n', '<C-Tab>', ':bNext<CR>')
@@ -56,8 +58,8 @@ vim.keymap.set('n', '<A-h>', '<CMD>vertical resize -5<CR>', { noremap = true, si
 vim.keymap.set('n', '<A-l>', '<CMD>vertical resize +5<CR>', { noremap = true, silent = true })
 
 -- Resize horizontal split windows
-vim.keymap.set('n', '<A-k>', '<CMD>resize -3<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<A-j>', '<CMD>resize +3<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<A-j>', '<CMD>resize -3<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<A-k>', '<CMD>resize +3<CR>', { noremap = true, silent = true })
 
 -- Change directory
 vim.keymap.set('n', '<leader>cd', ':cd %:h<CR>', { desc = '[C]hange [D]irectory' })
@@ -104,3 +106,32 @@ vim.keymap.set('n', '<leader>fr', ':FlutterReload<CR>')
 vim.keymap.set('n', '<leader>gs', ':Gitsigns toggle_current_line_blame<CR>', { desc = '[G]it [S]ign Toggle current line blame' })
 vim.keymap.set('n', '<leader>to', 'yyp^vt=yIprint("<Esc>A\\n",<Esc>pa)<Esc>', { desc = 'print current line' })
 vim.keymap.set('v', '<leader>to', ':s/\\(.*\\)=\\(.*\\)/\\1=\\2\\rprint("\\1=\\2\\\\n",\\1)<CR><Esc>', { desc = 'print selected lines' })
+
+vim.keymap.set('v', '<leader>A', ':s/\\(.*\\)/\\1', { desc = 'Edit at end of line' })
+
+
+-- terminal command
+vim.keymap.set('n', '<leader>`v', ':cd %:p:h<CR><C-w>v:term<CR>iclear<CR>ci<CR><C-\\><C-n>')
+-- vim.keymap.set('n', '<leader>`s', ':cd %:p:h<CR><C-w>s:term<CR>iclear<CR>ci<CR><C-\\><C-n><CMD>resize -15<CR>')
+local job_id = 0
+vim.keymap.set('n', '<leader>`s', function()
+  vim.cmd.vnew()
+  vim.cmd.term()
+  vim.cmd.wincmd 'J'
+  vim.api.nvim_win_set_height(0, 15)
+  job_id = vim.bo.channel
+end)
+
+
+-- vim.keymap.set('n', '<leader>`v', function()
+--   vim.cmd.
+--   vim.cmd.term()
+--   vim.cmd.wincmd 'J'
+--   vim.api.nvim_win_set_height(0, 15)
+--   job_id = vim.bo.channel
+-- end)
+
+vim.keymap.set('n', '<leader>mk',function()
+	vim.fn.chansend(job_id, {"make \r\n"})
+end
+)
