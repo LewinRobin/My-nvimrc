@@ -1,10 +1,10 @@
 --[[
- __       ___________    __    ____  __  .__   __.    .______        ______   .______    __  .__   __. 
-|  |     |   ____\   \  /  \  /   / |  | |  \ |  |    |   _  \      /  __  \  |   _  \  |  | |  \ |  | 
-|  |     |  |__   \   \/    \/   /  |  | |   \|  |    |  |_)  |    |  |  |  | |  |_)  | |  | |   \|  | 
-|  |     |   __|   \            /   |  | |  . `  |    |      /     |  |  |  | |   _  <  |  | |  . `  | 
-|  `----.|  |____   \    /\    /    |  | |  |\   |    |  |\  \----.|  `--'  | |  |_)  | |  | |  |\   | 
-|_______||_______|   \__/  \__/     |__| |__| \__|    | _| `._____| \______/  |______/  |__| |__| \__| 
+ __       ___________    __    ____  __  .__   __.    .______        ______   .______    __  .__   __.
+|  |     |   ____\   \  /  \  /   / |  | |  \ |  |    |   _  \      /  __  \  |   _  \  |  | |  \ |  |
+|  |     |  |__   \   \/    \/   /  |  | |   \|  |    |  |_)  |    |  |  |  | |  |_)  | |  | |   \|  |
+|  |     |   __|   \            /   |  | |  . `  |    |      /     |  |  |  | |   _  <  |  | |  . `  |
+|  `----.|  |____   \    /\    /    |  | |  |\   |    |  |\  \----.|  `--'  | |  |_)  | |  | |  |\   |
+|_______||_______|   \__/  \__/     |__| |__| \__|    | _| `._____| \______/  |______/  |__| |__| \__|
 
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
@@ -166,8 +166,8 @@ vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
+vim.keymap.set('n', '<leader>E', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
+vim.keymap.set('n', '<leader>e', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 vim.keymap.set('n', '<leader>z', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -419,12 +419,15 @@ require('lazy').setup({
   --    require('Comment').setup({})
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {
-    mappings = {
-      extra = true,
-      basic = true,
+  {
+    'numToStr/Comment.nvim',
+    opts = {
+      mappings = {
+        extra = true,
+        basic = true,
+      },
     },
-  } },
+  },
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following lua:
@@ -554,7 +557,8 @@ require('lazy').setup({
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-      vim.keymap.set('n', '<C-P>', builtin.find_files, { desc = '[S]earch [F]iles' })
+      -- vim.keymap.set('n', '<C-P>', builtin.find_files, { desc = '[S]earch [F]iles' }) -- This is as per vscode keybind
+      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -563,6 +567,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>scl', builtin.colorscheme, { desc = '[S]earch [C]o[l]orscheme' })
+      vim.keymap.set('n', '<leader>scm', builtin.git_commits, { desc = '[S]earch [C]o[M]mit' })
+      vim.keymap.set('n', '<leader>sbr', builtin.git_branches, { desc = '[S]earch [B][R]anch' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -910,6 +917,7 @@ require('lazy').setup({
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          { name = 'codeium', priority = 1000 },
         },
       }
     end,
@@ -1360,68 +1368,117 @@ require('lazy').setup({
       },
     },
   },
-  -- {
-  --   'yetone/avante.nvim',
-  --   event = 'VeryLazy',
-  --   version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
-  --   opts = {
-  --     -- add any opts here
-  --     -- for example
-  --     -- provider = "openai",
-  --     -- openai = {
-  --     --   endpoint = "https://api.openai.com/v1",
-  --     --   model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
-  --     --   timeout = 30000, -- timeout in milliseconds
-  --     --   temperature = 0, -- adjust if needed
-  --     --   max_tokens = 4096,
-  --     provider = 'gemini',
-  --     openai = {
-  --       model = 'gemini-1.5-flash-latest',
-  --     },
-  --   },
-  --   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-  --   -- build = "make",
-  --   build = 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false', -- for windows
-  --   dependencies = {
-  --     'nvim-treesitter/nvim-treesitter',
-  --     'stevearc/dressing.nvim',
-  --     'nvim-lua/plenary.nvim',
-  --     'MunifTanjim/nui.nvim',
-  --     --- The below dependencies are optional,
-  --     'echasnovski/mini.pick', -- for file_selector provider mini.pick
-  --     'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
-  --     'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
-  --     'ibhagwan/fzf-lua', -- for file_selector provider fzf
-  --     'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
-  --     'zbirenbaum/copilot.lua', -- for providers='copilot'
-  --     {
-  --       -- support for image pasting
-  --       'HakonHarnes/img-clip.nvim',
-  --       event = 'VeryLazy',
-  --       opts = {
-  --         -- recommended settings
-  --         default = {
-  --           embed_image_as_base64 = false,
-  --           prompt_for_file_name = false,
-  --           drag_and_drop = {
-  --             insert_mode = true,
-  --           },
-  --           -- required for Windows users
-  --           use_absolute_path = true,
-  --         },
-  --       },
-  --     },
-  --     {
-  --       -- Make sure to set this up properly if you have lazy=true
-  --       'MeanderingProgrammer/render-markdown.nvim',
-  --       opts = {
-  --         file_types = { 'markdown', 'Avante' },
-  --       },
-  --       ft = { 'markdown', 'Avante' },
-  --     },
-  --   },
-  -- },
-  -- { 'Exafunction/codeium.vim', },
+  {
+    'yetone/avante.nvim',
+    event = 'VeryLazy',
+    version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
+    keys = {
+        {
+            "<leader>a+",
+            function()
+                local tree_ext = require("avante.extensions.nvim_tree")
+                tree_ext.add_file()
+            end,
+            desc = "Select file in NvimTree",
+            ft = "NvimTree",
+        },
+        {
+            "<leader>a-",
+            function()
+                local tree_ext = require("avante.extensions.nvim_tree")
+                tree_ext.remove_file()
+            end,
+            desc = "Deselect file in NvimTree",
+            ft = "NvimTree",
+        },
+    },
+    opts = {
+      -- add any opts here
+      -- for example
+      -- provider = "openai",
+      -- openai = {
+      --   endpoint = "https://api.openai.com/v1",
+      --   model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+      --   timeout = 30000, -- timeout in milliseconds
+      --   temperature = 0, -- adjust if needed
+      --   max_tokens = 4096,
+      provider = 'gemini',
+      openai = {
+        model = 'gemini-2.0-flash',
+      },
+ selector = {
+            exclude_auto_select = { "NvimTree" },
+        },
+    },
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    -- build = "make",
+    build = 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false', -- for windows
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'stevearc/dressing.nvim',
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      --- The below dependencies are optional,
+      'echasnovski/mini.pick', -- for file_selector provider mini.pick
+      'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
+      'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+      'ibhagwan/fzf-lua', -- for file_selector provider fzf
+      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
+      'zbirenbaum/copilot.lua', -- for providers='copilot'
+      {
+        -- support for image pasting
+        'HakonHarnes/img-clip.nvim',
+        event = 'VeryLazy',
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            -- required for Windows users
+            -- use_absolute_path = true,
+          },
+        },
+      },
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = {
+          file_types = {  'Avante' },
+        },
+        ft = {  'Avante' },
+      },
+    },
+  },
+ {
+    "github/copilot.vim",
+    event = "InsertEnter", -- Load on InsertEnter for better performance
+    config = function()
+      vim.cmd [[Copilot setup]]
+    end,
+  },
+
+  -- If you want Copilot suggestions integrated with nvim-cmp
+  {
+    "zbirenbaum/copilot-cmp",
+    after = { "copilot.lua" }, -- Make sure it loads after copilot.lua
+    config = function()
+      require("copilot_cmp").setup()
+    end,
+  },
+{
+    "Exafunction/windsurf.nvim",
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        "hrsh7th/nvim-cmp",
+    },
+    config = function()
+        require("codeium").setup({
+        })
+    end
+},
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
@@ -1479,10 +1536,12 @@ require('lazy').setup({
 
 --NOTE: Obsidian Keymaps
 vim.opt.conceallevel = 2
-vim.keymap.set('n', '<leader>obss', ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianSearch<CR>')
-vim.keymap.set('n', '<leader>obst', ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianToday<CR>')
-vim.keymap.set('n', '<leader>obsn', ':ObsidianSearch<CR>')
-vim.keymap.set('n', '<leader>obso', ':ObsidianOpen<CR>')
+vim.keymap.set('n', '<leader>obss', ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianSearch<CR>',{desc='Goto [Obs]idian & [S]earch'})
+vim.keymap.set('n', '<leader>obst', ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianToday<CR>',{desc='Goto [Obs]idian & get [T]oday\'s Daily'})
+vim.keymap.set('n', '<leader>obsm', ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianTomorrow<CR>',{desc='Goto [Obs]idian & get to[m]orrow\'s Daily'})
+vim.keymap.set('n', '<leader>obsy', ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianYesterday<CR>',{desc='Goto [Obs]idian & get [Y]esterday\'s Daily'})
+vim.keymap.set('n', '<leader>obsn', ':ObsidianSearch<CR>',{desc='[Obs]idian Search'})
+vim.keymap.set('n', '<leader>obso', ':ObsidianOpen<CR>',{desc = '[Obs]idian [O]pen'})
 
 -- NOTE: Harpoon configs
 local mark = require 'harpoon.mark'
@@ -1592,9 +1651,10 @@ oil.setup {
     ['<C-s>'] = 'actions.select_vsplit',
     ['<C-h>'] = 'actions.select_split',
     ['<C-t>'] = 'actions.select_tab',
-    -- ['<C-p>'] = 'actions.preview',     -- Lewin Robin -- commented because it was clashing with Telescope.
-    ['<C-p>'] = false, -- Lewin Robin -- commented because it was clashing with Telescope.
-    ['<C-c>'] = 'actions.close',
+    ['<C-p>'] = 'actions.preview',     -- Lewin Robin -- commented because it was clashing with Telescope.
+    -- ['<C-p>'] = false, -- Lewin Robin -- because telescope real keymap was kept
+    -- ['<C-c>'] = 'actions.close', -- Lewin Robin  -- cause this was annoying
+    ['<C-c>'] = false,
     ['<C-l>'] = 'actions.refresh',
     ['-'] = 'actions.parent',
     ['_'] = 'actions.open_cwd',
@@ -1746,3 +1806,31 @@ require 'keymaps'
 -- vim.opt.formatoptions = vim.opt.formatoptions:gsub('cro', '')
 -- im.cmd 'set formatoptions-=cro'
 -- vim.opt.formatoptions = 'cro'
+
+vim.g.format_on_save_enabled = true
+
+vim.api.nvim_set_keymap('n', '<leader>tf', [[:lua ToggleFormatOnSave()<CR>]], { noremap = true, silent = true })
+
+function ToggleFormatOnSave()
+  vim.g.format_on_save_enabled = not vim.g.format_on_save_enabled
+  if vim.g.format_on_save_enabled then
+    print 'Format on Save: Enabled'
+  else
+    print 'Format on Save: Disabled'
+  end
+end
+
+require('conform').setup {
+  notify_on_error = false,
+  format_on_save = function()
+    if vim.g.format_on_save_enabled then
+      return { timeout_ms = 500, lsp_fallback = true }
+    end
+  end,
+  formatters_by_ft = {
+    lua = { 'stylua' },
+  },
+}
+
+
+ vim.opt.laststatus = 3
