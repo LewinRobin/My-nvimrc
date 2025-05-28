@@ -1,4 +1,4 @@
---[[
+--[[
  __       ___________    __    ____  __  .__   __.    .______        ______   .______    __  .__   __.
 |  |     |   ____\   \  /  \  /   / |  | |  \ |  |    |   _  \      /  __  \  |   _  \  |  | |  \ |  |
 |  |     |  |__   \   \/    \/   /  |  | |   \|  |    |  |_)  |    |  |  |  | |  |_)  | |  | |   \|  |
@@ -239,14 +239,14 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'ThePrimeagen/vim-be-good',
-  'dccsillag/magma-nvim',
+  -- 'dccsillag/magma-nvim',
   -- 'luk400/vim-jukit',
-  'tpope/vim-surround',
+  -- 'tpope/vim-surround',
   'mbbill/undotree',
-  'nvim-treesitter/playground',
+  -- 'nvim-treesitter/playground',
   'tpope/vim-fugitive',
   'ThePrimeagen/harpoon',
-  'chrisbra/csv.vim',
+  -- 'chrisbra/csv.vim',
   'stevearc/oil.nvim',
   -- 'walcht/neovim-unity',
   -- 'nvim-java',
@@ -376,19 +376,19 @@ require('lazy').setup({
     },
     config = true,
   },
-  {
-    'epwalsh/pomo.nvim',
-    version = '*', -- Recommended, use latest release instead of latest commit
-    lazy = true,
-    cmd = { 'TimerStart', 'TimerRepeat' },
-    dependencies = {
-      -- Optional, but highly recommended if you want to use the "Default" timer
-      'rcarriga/nvim-notify',
-    },
-    opts = {
-      -- See below for full list of options 👇
-    },
-  },
+  -- {
+  --   'epwalsh/pomo.nvim',
+  --   version = '*', -- Recommended, use latest release instead of latest commit
+  --   lazy = true,
+  --   cmd = { 'TimerStart', 'TimerRepeat' },
+  --   dependencies = {
+  --     -- Optional, but highly recommended if you want to use the "Default" timer
+  --     'rcarriga/nvim-notify',
+  --   },
+  --   opts = {
+  --     -- See below for full list of options 👇
+  --   },
+  -- },
 
   -- { -- This plugin
   --   'Zeioth/compiler.nvim',
@@ -434,18 +434,18 @@ require('lazy').setup({
   --    require('gitsigns').setup({ ... })
   --
   -- See `:help gitsigns` to understand what the configuration keys do
-  { -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-    },
-  },
+  -- { -- Adds git related signs to the gutter, as well as utilities for managing changes
+  --   'lewis6991/gitsigns.nvim',
+  --   opts = {
+  --     signs = {
+  --       add = { text = '+' },
+  --       change = { text = '~' },
+  --       delete = { text = '_' },
+  --       topdelete = { text = '‾' },
+  --       changedelete = { text = '~' },
+  --     },
+  --   },
+  -- },
 
   -- NOTE: Plugins can also be configured to run lua code when they are loaded.
   --
@@ -940,19 +940,19 @@ require('lazy').setup({
   --   end,
   -- },
   {
-    'folke/tokyonight.nvim',
-    'rebelot/kanagawa.nvim',
-    -- 'projekt0n/github-nvim-theme.nvim',
-    'shaunsingh/nord.nvim',
-    'EdenEast/nightfox.nvim',
-    'navarasu/onedark.nvim',
-    'tanvirtin/monokai.nvim',
-    'rose-pine/neovim',
-    'catppuccin/nvim',
-    'tiagovla/tokyodark.nvim',
+    -- 'folke/tokyonight.nvim',
+    -- 'rebelot/kanagawa.nvim',
+    -- -- 'projekt0n/github-nvim-theme.nvim',
+    -- 'shaunsingh/nord.nvim',
+    -- 'EdenEast/nightfox.nvim',
+    -- 'navarasu/onedark.nvim',
+    -- 'tanvirtin/monokai.nvim',
+    -- 'rose-pine/neovim',
+    -- 'catppuccin/nvim',
+    -- 'tiagovla/tokyodark.nvim',
     'Mofiqul/vscode.nvim',
-    'loctvl842/monokai-pro.nvim',
-    'Mofiqul/dracula.nvim',
+    -- 'loctvl842/monokai-pro.nvim',
+    -- 'Mofiqul/dracula.nvim',
   },
   { -- You can easily change to a different colorscheme.         --Edited by Lewin Robin
     -- Change the name of the colorscheme plugin below, and then
@@ -1452,22 +1452,22 @@ require('lazy').setup({
       },
     },
   },
- {
-    "github/copilot.vim",
-    event = "InsertEnter", -- Load on InsertEnter for better performance
-    config = function()
-      vim.cmd [[Copilot setup]]
-    end,
-  },
-
-  -- If you want Copilot suggestions integrated with nvim-cmp
-  {
-    "zbirenbaum/copilot-cmp",
-    after = { "copilot.lua" }, -- Make sure it loads after copilot.lua
-    config = function()
-      require("copilot_cmp").setup()
-    end,
-  },
+ -- {
+ --    "github/copilot.vim",
+ --    event = "InsertEnter", -- Load on InsertEnter for better performance
+ --    config = function()
+ --      vim.cmd [[Copilot setup]]
+ --    end,
+ --  },
+ --
+ --  -- If you want Copilot suggestions integrated with nvim-cmp
+ --  {
+ --    "zbirenbaum/copilot-cmp",
+ --    after = { "copilot.lua" }, -- Make sure it loads after copilot.lua
+ --    config = function()
+ --      require("copilot_cmp").setup()
+ --    end,
+ --  },
 {
     "Exafunction/windsurf.nvim",
     dependencies = {
