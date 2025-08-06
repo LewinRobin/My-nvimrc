@@ -130,6 +130,14 @@ end)
 --   job_id = vim.bo.channel
 -- end)
 
+
 vim.keymap.set('n', '<leader>mk', function()
   vim.fn.chansend(job_id, { 'make \r\n' })
 end)
+
+-- vim.api.nvim_set_keymap('i', '<C-l>', '<C-x><C-o>', { noremap = true, silent = true, desc = "Omni Completion (LSP)" })
+--
+--
+-- vim.keymap.set('i', '<C-Space>', function()
+--   print("it works")
+-- end)
