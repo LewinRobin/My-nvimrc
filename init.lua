@@ -1921,7 +1921,7 @@ require('lazy').setup({
       require('codeium').setup {}
     end,
   },
-  { 'https://github.com/Weyaaron/nvim-training', pin = true, opts = {} },
+  -- { 'https://github.com/Weyaaron/nvim-training', pin = true, opts = {} },
   -- cool pluggins
   -- {"Eandrju/cellular-automaton.nvim"},
 }, {
@@ -2293,3 +2293,4 @@ require('conform').setup {
 }
 
 vim.opt.laststatus = 3
+vim.opt.fileformat = unix
