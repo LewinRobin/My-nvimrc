@@ -177,7 +177,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
--- vim.keymap.set('t', '<C-\\><C-n>', '<Esc>', { desc = 'Exit terminal mode' })
+vim.keymap.set('t', '<C-c>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 -- vim.keymap.set('t', '<Esc><Esc>', '<Esc>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
@@ -1921,9 +1921,164 @@ require('lazy').setup({
       require('codeium').setup {}
     end,
   },
-  -- { 'https://github.com/Weyaaron/nvim-training', pin = true, opts = {} },
-  -- cool pluggins
-  -- {"Eandrju/cellular-automaton.nvim"},
+  -- error highlighting pluggins
+  {
+    'folke/trouble.nvim',
+    opts = {}, -- for default options, refer to the configuration section for custom setup.
+    cmd = 'Trouble',
+    keys = {
+      {
+        '<leader>xx',
+        '<cmd>Trouble diagnostics toggle<cr>',
+        desc = 'Diagnostics (Trouble)',
+      },
+      {
+        '<leader>xX',
+        '<cmd>Trouble diagnostics toggle filter.buf=0<cr>',
+        desc = 'Buffer Diagnostics (Trouble)',
+      },
+      {
+        '<leader>cs',
+        '<cmd>Trouble symbols toggle focus=false<cr>',
+        desc = 'Symbols (Trouble)',
+      },
+      {
+        '<leader>cl',
+        '<cmd>Trouble lsp toggle focus=false win.position=right<cr>',
+        desc = 'LSP Definitions / references / ... (Trouble)',
+      },
+      {
+        '<leader>xL',
+        '<cmd>Trouble loclist toggle<cr>',
+        desc = 'Location List (Trouble)',
+      },
+      {
+        '<leader>xQ',
+        '<cmd>Trouble qflist toggle<cr>',
+        desc = 'Quickfix List (Trouble)',
+      },
+    },
+  },
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      vim.opt.laststatus = 3
+
+      local function get_diagnostics()
+        local colors = {
+          error = '#FF5555', -- Red for Error
+          warning = '#FFB86C', -- Orange/Yellow for Warning
+          info = '#8BE9FD', -- Cyan for Info
+          hint = '#BD93F9', -- Purple for Hint
+        }
+
+        local diagnostics = vim.diagnostic.get(0)
+        local counts = { error = 0, warn = 0, info = 0, hint = 0 }
+
+        for _, diagnostic in ipairs(diagnostics) do
+          if diagnostic.severity == vim.diagnostic.severity.ERROR then
+            counts.error = counts.error + 1
+          elseif diagnostic.severity == vim.diagnostic.severity.WARN then
+            counts.warn = counts.warn + 1
+          elseif diagnostic.severity == vim.diagnostic.severity.INFO then
+            counts.info = counts.info + 1
+          elseif diagnostic.severity == vim.diagnostic.severity.HINT then
+            counts.hint = counts.hint + 1
+          end
+        end
+
+        local result = {}
+
+        if counts.error > 0 then
+          table.insert(result, string.format('%%#LualineDiagnosticError# %d', counts.error))
+        end
+        if counts.warn > 0 then
+          table.insert(result, string.format('%%#LualineDiagnosticWarn# %d', counts.warn))
+        end
+        if counts.info > 0 then
+          table.insert(result, string.format('%%#LualineDiagnosticInfo# %d', counts.info))
+        end
+        if counts.hint > 0 then
+          table.insert(result, string.format('%%#LualineDiagnosticHint# %d', counts.hint))
+        end
+
+        -- No background color for diagnostics
+        vim.api.nvim_set_hl(0, 'LualineDiagnosticError', { fg = colors.error, bg = 'NONE' })
+        vim.api.nvim_set_hl(0, 'LualineDiagnosticWarn', { fg = colors.warning, bg = 'NONE' })
+        vim.api.nvim_set_hl(0, 'LualineDiagnosticInfo', { fg = colors.info, bg = 'NONE' })
+        vim.api.nvim_set_hl(0, 'LualineDiagnosticHint', { fg = colors.hint, bg = 'NONE' })
+
+        return table.concat(result, ' ')
+      end
+
+      -- Static theme (same color for all modes)
+      local static_theme = {
+        normal = {
+          a = { fg = '#1E1E1E', bg = '#569CD6', gui = 'bold' }, -- Blue accent
+          b = { fg = '#D4D4D4', bg = '#2D2D2D' }, -- Soft gray mid
+          c = { fg = '#CCCCCC', bg = '#1E1E1E' }, -- Dark background
+        },
+        insert = {
+          a = { fg = '#1E1E1E', bg = '#569CD6', gui = 'bold' },
+          b = { fg = '#D4D4D4', bg = '#2D2D2D' },
+          c = { fg = '#CCCCCC', bg = '#1E1E1E' },
+        },
+        visual = {
+          a = { fg = '#1E1E1E', bg = '#C586C0', gui = 'bold' }, -- Soft purple accent
+          b = { fg = '#D4D4D4', bg = '#2D2D2D' },
+          c = { fg = '#CCCCCC', bg = '#1E1E1E' },
+        },
+        replace = {
+          a = { fg = '#1E1E1E', bg = '#D16969', gui = 'bold' }, -- Red accent
+          b = { fg = '#D4D4D4', bg = '#2D2D2D' },
+          c = { fg = '#CCCCCC', bg = '#1E1E1E' },
+        },
+        command = {
+          a = { fg = '#1E1E1E', bg = '#4EC9B0', gui = 'bold' }, -- Teal accent
+          b = { fg = '#D4D4D4', bg = '#2D2D2D' },
+          c = { fg = '#CCCCCC', bg = '#1E1E1E' },
+        },
+        inactive = {
+          a = { fg = '#808080', bg = '#2D2D2D' },
+          b = { fg = '#808080', bg = '#2D2D2D' },
+          c = { fg = '#666666', bg = '#1E1E1E' },
+        },
+      }
+
+      require('lualine').setup {
+        options = {
+          theme = static_theme,
+          section_separators = { left = '', right = '' },
+          component_separators = { left = '', right = '' },
+          icons_enabled = true,
+        },
+        sections = {
+          lualine_a = { 'mode' },
+          lualine_b = {
+            {
+              'branch',
+              icon = '',
+              color = { fg = '#FFFFFF' },
+            },
+          },
+          lualine_c = { { 'filename', path = 1 } },
+          lualine_x = { get_diagnostics, 'encoding', 'fileformat' },
+          lualine_z = { 'location' },
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = { 'filename' },
+          lualine_x = { 'location' },
+          lualine_y = {},
+          lualine_z = {},
+        },
+        tabline = {},
+        extensions = {},
+      }
+    end,
+  },
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
@@ -2294,3 +2449,8 @@ require('conform').setup {
 
 vim.opt.laststatus = 3
 vim.opt.fileformat = unix
+
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+vim.opt.softtabstop = 2
