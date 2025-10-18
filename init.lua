@@ -2054,7 +2054,20 @@ require('lazy').setup({
           icons_enabled = true,
         },
         sections = {
-          lualine_a = { 'branch' },
+          lualine_a = {
+            {
+              'branch',
+              fmt = function(str)
+                -- Checks if the output is the default placeholder '?' or an empty string,
+                -- and if so, returns nil to hide the component.
+                if str and str ~= '?' and str ~= '' then
+                  return str
+                else
+                  return nil
+                end
+              end,
+            },
+          },
           lualine_b = {
             -- {
             --   'branch',
