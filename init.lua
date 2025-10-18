@@ -2020,22 +2020,22 @@ require('lazy').setup({
           c = { fg = '#CCCCCC', bg = '#1E1E1E' }, -- Dark background
         },
         insert = {
-          a = { fg = '#1E1E1E', bg = '#569CD6', gui = 'bold' },
+          a = { fg = '#1E1E1E', bg = '#569CD6', gui = 'bold' }, -- Blue accent
           b = { fg = '#D4D4D4', bg = '#2D2D2D' },
           c = { fg = '#CCCCCC', bg = '#1E1E1E' },
         },
         visual = {
-          a = { fg = '#1E1E1E', bg = '#C586C0', gui = 'bold' }, -- Soft purple accent
+          a = { fg = '#1E1E1E', bg = '#569CD6', gui = 'bold' }, -- Blue accent
           b = { fg = '#D4D4D4', bg = '#2D2D2D' },
           c = { fg = '#CCCCCC', bg = '#1E1E1E' },
         },
         replace = {
-          a = { fg = '#1E1E1E', bg = '#D16969', gui = 'bold' }, -- Red accent
+          a = { fg = '#1E1E1E', bg = '#569CD6', gui = 'bold' }, -- Blue accent
           b = { fg = '#D4D4D4', bg = '#2D2D2D' },
           c = { fg = '#CCCCCC', bg = '#1E1E1E' },
         },
         command = {
-          a = { fg = '#1E1E1E', bg = '#4EC9B0', gui = 'bold' }, -- Teal accent
+          a = { fg = '#1E1E1E', bg = '#569CD6', gui = 'bold' }, -- Blue accent
           b = { fg = '#D4D4D4', bg = '#2D2D2D' },
           c = { fg = '#CCCCCC', bg = '#1E1E1E' },
         },
@@ -2054,16 +2054,18 @@ require('lazy').setup({
           icons_enabled = true,
         },
         sections = {
-          lualine_a = { 'mode' },
+          lualine_a = { 'branch' },
           lualine_b = {
-            {
-              'branch',
-              icon = '',
-              color = { fg = '#FFFFFF' },
-            },
+            -- {
+            --   'branch',
+            --   icon = '',
+            --   color = { fg = '#FFFFFF' },
+            -- },
+            'diff',
           },
           lualine_c = { { 'filename', path = 1 } },
           lualine_x = { get_diagnostics, 'encoding', 'fileformat' },
+          lualine_y = { 'progress' },
           lualine_z = { 'location' },
         },
         inactive_sections = {
