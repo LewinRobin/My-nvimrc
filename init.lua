@@ -1499,7 +1499,8 @@ require('lazy').setup({
     'epwalsh/obsidian.nvim',
     version = '*', -- recommended, use latest release instead of latest commit
     lazy = true,
-    ft = 'markdown',
+    event = 'VimEnter',
+    -- ft = 'markdown',
     -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
     -- event = {
     --   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
@@ -1520,7 +1521,7 @@ require('lazy').setup({
       workspaces = {
         {
           name = 'personal',
-          path = 'E:/OneDrive/codefile/Obsidian Vault',
+          path = '/media/iiab-admin/C298879E98879019/OneDrive/codefile/Obsidian Vault/',
         },
         -- {                                            -- This has been commented out by me because there is no work file.
         --   name = 'work',
@@ -1547,7 +1548,7 @@ require('lazy').setup({
         -- Optional, if you want to change the date format of the default alias of daily notes.
         alias_format = '%B %-d, %Y',
         -- Optional, if you want to automatically insert a template from your template directory like 'daily.md'
-        template = nil,
+        template = 'daily.md',
       },
 
       -- Optional, completion of wiki links, local markdown links, and tags using nvim-cmp.
@@ -1669,13 +1670,13 @@ require('lazy').setup({
       end,
 
       -- Optional, for templates (see below).
-      -- templates = {                          -- Lewin Robin commented out
-      --   folder = 'templates',
-      --   date_format = '%Y-%m-%d',
-      --   time_format = '%H:%M',
-      --   -- A map for custom variables, the key should be the variable and the value a function
-      --   substitutions = {},
-      -- },
+      templates = { -- Lewin Robin commented out
+        folder = 'templates',
+        date_format = '%Y-%m-%d',
+        time_format = '%H:%M',
+        -- A map for custom variables, the key should be the variable and the value a function
+        substitutions = {},
+      },
 
       -- Optional, by default when you use `:ObsidianFollowLink` on a link to an external
       -- URL it will be ignored but you can customize this behavior here.
@@ -2094,159 +2095,180 @@ require('lazy').setup({
       }
     end,
   },
+  -- {                                              -- commented too much bloat for very less use.
+  --   'folke/snacks.nvim',
+  --   priority = 1000,
+  --   lazy = false,
+  --   ---@type snacks.Config
+  --   opts = {
+  --     notifier = {
+  --       enabled = true,
+  --       timeout = 3000,
+  --     },
+  --     picker = { enabled = true },
+  --     scope = { enabled = true },
+  --     words = { enabled = true },
+  --     styles = {
+  --       notification = {
+  --         -- wo = { wrap = true } -- Wrap notifications
+  --       },
+  --     },
+  --   },
+  --   keys = {
+  --     -- Top Pickers & Explorer
+  --     {
+  --       '<leader>fp',
+  --       function()
+  --         Snacks.picker.projects()
+  --       end,
+  --       desc = 'Projects',
+  --     },
+  --     {
+  --       '<leader>sH',
+  --       function()
+  --         Snacks.picker.highlights()
+  --       end,
+  --       desc = 'Highlights',
+  --     },
+  --     {
+  --       '<leader>si',
+  --       function()
+  --         Snacks.picker.icons()
+  --       end,
+  --       desc = 'Icons',
+  --     },
+  --     {
+  --       '<leader>sp',
+  --       function()
+  --         Snacks.picker.lazy()
+  --       end,
+  --       desc = 'Search for Plugin Spec',
+  --     },
+  --     {
+  --       '<leader>su',
+  --       function()
+  --         Snacks.picker.undo()
+  --       end,
+  --       desc = 'Undo History',
+  --     },
+  --     {
+  --       '<leader>.',
+  --       function()
+  --         Snacks.scratch()
+  --       end,
+  --       desc = 'Toggle Scratch Buffer',
+  --     },
+  --     {
+  --       '<leader>.s',
+  --       function()
+  --         Snacks.scratch.select()
+  --       end,
+  --       desc = 'Select Scratch Buffer',
+  --     },
+  --     {
+  --       '<leader>n',
+  --       function()
+  --         Snacks.notifier.show_history()
+  --       end,
+  --       desc = 'Notification History',
+  --     },
+  --     {
+  --       '<leader>gB',
+  --       function()
+  --         Snacks.gitbrowse()
+  --       end,
+  --       desc = 'Git Browse',
+  --       mode = { 'n', 'v' },
+  --     },
+  --     {
+  --       '<leader>un',
+  --       function()
+  --         Snacks.notifier.hide()
+  --       end,
+  --       desc = 'Dismiss All Notifications',
+  --     },
+  --     {
+  --       ']]',
+  --       function()
+  --         Snacks.words.jump(vim.v.count1)
+  --       end,
+  --       desc = 'Next Reference',
+  --       mode = { 'n', 't' },
+  --     },
+  --     {
+  --       '[[',
+  --       function()
+  --         Snacks.words.jump(-vim.v.count1)
+  --       end,
+  --       desc = 'Prev Reference',
+  --       mode = { 'n', 't' },
+  --     },
+  --     {
+  --       '<leader>N',
+  --       desc = 'Neovim News',
+  --       function()
+  --         Snacks.win {
+  --           file = vim.api.nvim_get_runtime_file('doc/news.txt', false)[1],
+  --           width = 0.6,
+  --           height = 0.6,
+  --           wo = {
+  --             spell = false,
+  --             wrap = false,
+  --             signcolumn = 'yes',
+  --             statuscolumn = ' ',
+  --             conceallevel = 3,
+  --           },
+  --         }
+  --       end,
+  --     },
+  --   },
+  --   init = function()
+  --     vim.api.nvim_create_autocmd('User', {
+  --       pattern = 'VeryLazy',
+  --       callback = function()
+  --         -- Setup some globals for debugging (lazy-loaded)
+  --         _G.dd = function(...)
+  --           Snacks.debug.inspect(...)
+  --         end
+  --         _G.bt = function()
+  --           Snacks.debug.backtrace()
+  --         end
+  --
+  --         -- Override print to use snacks for `:=` command
+  --         if vim.fn.has 'nvim-0.11' == 1 then
+  --           vim._print = function(_, ...)
+  --             dd(...)
+  --           end
+  --         else
+  --           vim.print = _G.dd
+  --         end
+  --
+  --         -- Create some toggle mappings
+  --         Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>us'
+  --       end,
+  --     })
+  --   end,
+  -- },
   {
-    'folke/snacks.nvim',
-    priority = 1000,
-    lazy = false,
-    ---@type snacks.Config
+    'dundalek/bloat.nvim',
+    cmd = 'Bloat',
+  },
+  {
+    'LunarVim/bigfile.nvim',
+    event = 'BufReadPre', -- Load before any file opens
     opts = {
-      notifier = {
-        enabled = true,
-        timeout = 3000,
-      },
-      picker = { enabled = true },
-      scope = { enabled = true },
-      words = { enabled = true },
-      styles = {
-        notification = {
-          -- wo = { wrap = true } -- Wrap notifications
-        },
-      },
-    },
-    keys = {
-      -- Top Pickers & Explorer
-      {
-        '<leader>fp',
-        function()
-          Snacks.picker.projects()
-        end,
-        desc = 'Projects',
-      },
-      {
-        '<leader>sH',
-        function()
-          Snacks.picker.highlights()
-        end,
-        desc = 'Highlights',
-      },
-      {
-        '<leader>si',
-        function()
-          Snacks.picker.icons()
-        end,
-        desc = 'Icons',
-      },
-      {
-        '<leader>sp',
-        function()
-          Snacks.picker.lazy()
-        end,
-        desc = 'Search for Plugin Spec',
-      },
-      {
-        '<leader>su',
-        function()
-          Snacks.picker.undo()
-        end,
-        desc = 'Undo History',
-      },
-      {
-        '<leader>.',
-        function()
-          Snacks.scratch()
-        end,
-        desc = 'Toggle Scratch Buffer',
-      },
-      {
-        '<leader>.s',
-        function()
-          Snacks.scratch.select()
-        end,
-        desc = 'Select Scratch Buffer',
-      },
-      {
-        '<leader>n',
-        function()
-          Snacks.notifier.show_history()
-        end,
-        desc = 'Notification History',
-      },
-      {
-        '<leader>gB',
-        function()
-          Snacks.gitbrowse()
-        end,
-        desc = 'Git Browse',
-        mode = { 'n', 'v' },
-      },
-      {
-        '<leader>un',
-        function()
-          Snacks.notifier.hide()
-        end,
-        desc = 'Dismiss All Notifications',
-      },
-      {
-        ']]',
-        function()
-          Snacks.words.jump(vim.v.count1)
-        end,
-        desc = 'Next Reference',
-        mode = { 'n', 't' },
-      },
-      {
-        '[[',
-        function()
-          Snacks.words.jump(-vim.v.count1)
-        end,
-        desc = 'Prev Reference',
-        mode = { 'n', 't' },
-      },
-      {
-        '<leader>N',
-        desc = 'Neovim News',
-        function()
-          Snacks.win {
-            file = vim.api.nvim_get_runtime_file('doc/news.txt', false)[1],
-            width = 0.6,
-            height = 0.6,
-            wo = {
-              spell = false,
-              wrap = false,
-              signcolumn = 'yes',
-              statuscolumn = ' ',
-              conceallevel = 3,
-            },
-          }
-        end,
+      filesize = 2, -- Trigger for files larger than 2 MiB
+      features = {
+        'indent_blankline',
+        'illuminate',
+        'lsp',
+        'treesitter',
+        'syntax',
+        'matchparen',
+        'vimopts',
+        'filetype',
       },
     },
-    init = function()
-      vim.api.nvim_create_autocmd('User', {
-        pattern = 'VeryLazy',
-        callback = function()
-          -- Setup some globals for debugging (lazy-loaded)
-          _G.dd = function(...)
-            Snacks.debug.inspect(...)
-          end
-          _G.bt = function()
-            Snacks.debug.backtrace()
-          end
-
-          -- Override print to use snacks for `:=` command
-          if vim.fn.has 'nvim-0.11' == 1 then
-            vim._print = function(_, ...)
-              dd(...)
-            end
-          else
-            vim.print = _G.dd
-          end
-
-          -- Create some toggle mappings
-          Snacks.toggle.option('spell', { name = 'Spelling' }):map '<leader>us'
-        end,
-      })
-    end,
   },
 }, {
   ui = {
@@ -2604,3 +2626,83 @@ vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 vim.opt.softtabstop = 2
+
+-- Save this code in your init.lua (or a file it loads)
+
+-- The ASCII art, defined as a multi-line Lua string
+local ascii_art = [[
+ .d88b.  d8888b. d88888b d8b   db                    
+.8P  Y8. 88  `8D 88'     888o  88                    
+88    88 88oodD' 88ooooo 88V8o 88                    
+88    88 88~~~   88~~~~~ 88 V8o88                    
+`8b  d8' 88      88.     88  V888                    
+ `Y88P'  88      Y88888P VP   V8P                    
+                                                     
+                                                     
+d8b   db  .d88b.  d888888b d88888b .d8888.           
+888o  88 .8P  Y8. `~~88~~' 88'     88'  YP           
+88V8o 88 88    88    88    88ooooo `8bo.             
+88 V8o88 88    88    88    88~~~~~   `Y8b.           
+88  V888 `8b  d8'    88    88.     db   8D           
+VP   V8P  `Y88P'     YP    Y88888P `8888Y'           
+                                                     
+                                                     
+d8888b. db      d88888b  .d8b.  .d8888. d88888b      
+88  `8D 88      88'     d8' `8b 88'  YP 88'          
+88oodD' 88      88ooooo 88ooo88 `8bo.   88ooooo      
+88~~~   88      88~~~~~ 88~~~88   `Y8b. 88~~~~~      
+88      88booo. 88.     88   88 db   8D 88.          
+88      Y88888P Y88888P YP   YP `8888Y' Y88888P      
+                                                     
+                                                     
+d888888b db    db d8888b. d88888b                    
+`~~88~~' `8b  d8' 88  `8D 88'                        
+   88     `8bd8'  88oodD' 88ooooo                    
+   88       88    88~~~   88~~~~~                    
+   88       88    88      88.                        
+   YP       YP    88      Y88888P                    
+                                                     
+                                                     
+Cb       .d88b.  d8888b. .d8888. d888888b            
+`8b     .8P  Y8. 88  `8D 88'  YP `~~88~~'            
+ `8b    88    88 88oooY' `8bo.      88               
+  `8b   88    88 88~~~b.   `Y8b.    88               
+   `8b  `8b  d8' 88   8D db   8D    88               
+    `8D  `Y88P'  Y8888P' `8888Y'    YP               
+                                                     
+                                                     
+]]
+
+-- Function to display the ASCII art
+local function show_welcome_screen()
+  -- nvim_echo expects a list of parts and a boolean for history.
+  -- We use 'Statement' for coloring.
+  vim.api.nvim_echo({ { ascii_art, 'Statement' } }, false, {})
+end
+
+-- This will run every time Neovim starts, regardless of what file is opened.
+show_welcome_screen()
+
+-- Forcefully open daily notes
+--
+-- -- Create an Autocmd Group to keep things tidy
+-- local obsidian_autocmds = vim.api.nvim_create_augroup('ObsidianDailyNote', { clear = true })
+--
+-- -- Set up an autocommand to run :ObsidianToday when Neovim starts
+-- vim.api.nvim_create_autocmd('VimEnter', {
+--   group = obsidian_autocmds,
+--   pattern = '*', -- Apply to all files/buffers
+--   callback = function()
+--     -- Check if the Obsidian plugin is loaded and the command exists
+--     if vim.fn.exists ':ObsidianToday' == 2 then
+--       -- Execute the ObsidianToday command
+--       vim.cmd 'ObsidianToday'
+--     end
+--   end,
+--   -- Use 'nested' if you need other autocommands to run after this one,
+--   -- but generally not needed for a simple startup command.
+--   -- nested = true,
+-- })
+require('flutter-tools').setup {
+  flutter_path = '/snap/bin/flutter',
+}
