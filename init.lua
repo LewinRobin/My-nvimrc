@@ -2327,27 +2327,14 @@ require('lazy').setup({
 
 --NOTE: Obsidian Keymaps
 vim.opt.conceallevel = 2
-vim.keymap.set('n', '<leader>obss', ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianSearch<CR>', { desc = 'Goto [Obs]idian & [S]earch' })
-vim.keymap.set(
-  'n',
-  '<leader>obst',
-  ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianToday<CR>',
-  { desc = "Goto [Obs]idian & get [T]oday's Daily" }
-)
-vim.keymap.set(
-  'n',
-  '<leader>obsm',
-  ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianTomorrow<CR>',
-  { desc = "Goto [Obs]idian & get to[m]orrow's Daily" }
-)
-vim.keymap.set(
-  'n',
-  '<leader>obsy',
-  ':e E:\\Onedrive\\codefile\\Obsidian\\ Vault\\obsidian.md <CR>:ObsidianYesterday<CR>',
-  { desc = "Goto [Obs]idian & get [Y]esterday's Daily" }
-)
+vim.keymap.set('n', '<leader>obss', ':ObsidianSearch<CR>', { desc = 'Goto [Obs]idian & [S]earch' })
+vim.keymap.set('n', '<leader>obst', ':ObsidianToday<CR>', { desc = "Goto [Obs]idian & get [T]oday's Daily" })
+vim.keymap.set('n', '<leader>obsm', ':ObsidianTomorrow<CR>', { desc = "Goto [Obs]idian & get to[m]orrow's Daily" })
+vim.keymap.set('n', '<leader>obsy', ':ObsidianYesterday<CR>', { desc = "Goto [Obs]idian & get [Y]esterday's Daily" })
 vim.keymap.set('n', '<leader>obsn', ':ObsidianSearch<CR>', { desc = '[Obs]idian Search' })
 vim.keymap.set('n', '<leader>obso', ':ObsidianOpen<CR>', { desc = '[Obs]idian [O]pen' })
+vim.keymap.set('n', '<leader>obse', ':ObsidianExtractNote<CR>', { desc = '[Obs]idian [E]xtractNotes' })
+vim.keymap.set('n', '<leader>obsf', ':ObsidianFollowLink<CR>', { desc = '[Obs]idian [F]ollowLink' })
 
 -- NOTE: Harpoon configs
 local mark = require 'harpoon.mark'

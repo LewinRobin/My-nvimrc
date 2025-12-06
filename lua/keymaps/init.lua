@@ -109,6 +109,7 @@ vim.keymap.set('n', '<leader>tpj', 'yypwvt=console.log("<Esc>A\\n",<Esc>pa)<Esc>
 vim.keymap.set('v', '<leader>tpj', ':s/\\(.*\\)=\\(.*\\)/\\1=\\2\\rconsole.log("\\1=\\2\\\\n",\\1)<CR><Esc>', { desc = 'print selected lines' })
 
 vim.keymap.set('v', '<leader>A', ':s/\\(.*\\)/\\1', { desc = 'Edit at end of line' })
+vim.keymap.set('v', '<leader>I', ':s/\\(.*\\)/\\1<Left><Left>', { desc = 'Edit at end of line' })
 
 -- terminal command
 vim.keymap.set('n', '<leader>`v', ':cd %:p:h<CR><C-w>v:term<CR>iclear<CR>ci<CR><C-\\><C-n>')
