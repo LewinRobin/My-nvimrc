@@ -1521,7 +1521,7 @@ require('lazy').setup({
       workspaces = {
         {
           name = 'personal',
-          path = '/media/iiab-admin/C298879E98879019/OneDrive/codefile/Obsidian Vault/',
+          path = '/mnt/E/codefile/Obsidian Vault/',
         },
         -- {                                            -- This has been commented out by me because there is no work file.
         --   name = 'work',
