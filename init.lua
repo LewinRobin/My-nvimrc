@@ -999,7 +999,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
-      vim.keymap.set('n', '<C-f>', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+      -- vim.keymap.set('n', '<C-f>', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
@@ -1325,6 +1325,9 @@ require('lazy').setup({
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
           ['<tab>'] = cmp.mapping.confirm { select = true },
+          ['<C-y>'] = cmp.mapping(function(fallback)
+            fallback() -- This passes the keypress directly to Copilot/Codeium ghost text
+          end, { 'i', 's' }),
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
@@ -1684,8 +1687,8 @@ require('lazy').setup({
       follow_url_func = function(url)
         -- Open the URL in the default web browser.
         -- vim.fn.jobstart { 'open', url } -- Mac OS
-        vim.fn.jobstart { 'msedge', url } -- Windows
-        -- vim.fn.jobstart({"xdg-open", url})  -- linux
+        -- vim.fn.jobstart { 'msedge', url } -- Windows
+        vim.fn.jobstart { 'xdg-open', url } -- linux
       end,
 
       -- Optional, set to true if you use the Obsidian Advanced URI plugin.
@@ -1846,8 +1849,9 @@ require('lazy').setup({
       mode = 'legacy', -- defult is agentic which will use a lot of modes
       providers = {
         gemini = {
-          model = 'gemini-2.0-flash',
-          disable_tools = true,
+          model = 'gemini-3-flash-preview', -- Added "-preview"
+          max_tokens = 8192,
+          temperature = 1, -- Gemini 3 performs best at 1.0
         },
       },
       selector = {
@@ -1896,32 +1900,48 @@ require('lazy').setup({
       },
     },
   },
-  -- {
-  --    "github/copilot.vim",
-  --    event = "InsertEnter", -- Load on InsertEnter for better performance
-  --    config = function()
-  --      vim.cmd [[Copilot setup]]
-  --    end,
-  --  },
-  --
-  --  -- If you want Copilot suggestions integrated with nvim-cmp
-  --  {
-  --    "zbirenbaum/copilot-cmp",
-  --    after = { "copilot.lua" }, -- Make sure it loads after copilot.lua
-  --    config = function()
-  --      require("copilot_cmp").setup()
-  --    end,
-  --  },
   {
-    'Exafunction/windsurf.nvim',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      'hrsh7th/nvim-cmp',
-    },
+    'github/copilot.vim',
     config = function()
-      require('codeium').setup {}
+      -- 1. Disable the default Tab mapping
+      vim.g.copilot_no_tab_map = true
+      -- 2. Enable/Disable as you wish
+      vim.g.copilot_enabled = 0
+
+      -- 3. Map <C-y> to accept the suggestion
+      -- 'i' means insert mode, 'expr' is required because copilot#Accept is a function
+      vim.keymap.set('i', '<C-y>', 'copilot#Accept("\\<CR>")', {
+        expr = true,
+        replace_keycodes = false,
+      })
+      vim.keymap.set('i', '<A-y>', '<Plug>(copilot-accept-line)')
+      vim.keymap.set('i', '<C-]>', '<Plug>(copilot-next)')
+      vim.keymap.set('i', '<C-[>', '<Plug>(copilot-previous)')
+      vim.keymap.set('i', '<C-Space>', function()
+        require('copilot.suggestion').toggle_auto_trigger()
+      end, { desc = 'Toggle Copilot Suggestion' })
     end,
   },
+
+  -- If you want Copilot suggestions integrated with nvim-cmp
+  -- {
+  --   'zbirenbaum/copilot-cmp',
+  --   after = { 'copilot.lua' }, -- Make sure it loads after copilot.lua
+  --   config = function()
+  --     require('copilot_cmp').setup()
+  --   end,
+  -- },
+
+  -- {
+  --   'Exafunction/windsurf.nvim',
+  --   dependencies = {
+  --     'nvim-lua/plenary.nvim',
+  --     'hrsh7th/nvim-cmp',
+  --   },
+  --   config = function()
+  --     require('codeium').setup {}
+  --   end,
+  -- },
   -- error highlighting pluggins
   {
     'folke/trouble.nvim',
@@ -2378,7 +2398,7 @@ vim.keymap.set('t', '<C-n>', '<down>')
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
 
 -- NOTE: Oil Config
-vim.keymap.set('n', '<C-b>', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 local oil = require 'oil'
 oil.setup {
   -- Oil will take over directory buffers (e.g. `vim .` or `:e src/`)
@@ -2607,7 +2627,9 @@ require('conform').setup {
 }
 
 vim.opt.laststatus = 3
-vim.opt.fileformat = unix
+if vim.bo.modifiable then
+  vim.opt.fileformat = 'unix'
+end
 
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
@@ -2668,7 +2690,7 @@ local function show_welcome_screen()
 end
 
 -- This will run every time Neovim starts, regardless of what file is opened.
-show_welcome_screen()
+-- show_welcome_screen() -- commented out by Lewin Robin
 
 -- Forcefully open daily notes
 --
@@ -2693,3 +2715,24 @@ show_welcome_screen()
 require('flutter-tools').setup {
   flutter_path = '/snap/bin/flutter',
 }
+
+vim.keymap.set('n', '<C-f>', '<cmd>silent !tmux neww tmux-sessionizer<CR>')
+
+-- Command to manually start Copilot
+vim.api.nvim_create_user_command('CopilotOn', function()
+  vim.g.copilot_enabled = 1
+  vim.cmd 'Copilot enable'
+  print 'Copilot Started!'
+end, {})
+
+-- Optional: A command to turn it back off if needed
+vim.api.nvim_create_user_command('CopilotOff', function()
+  vim.g.copilot_enabled = 0
+  vim.cmd 'Copilot disable'
+  print 'Copilot Disabled.'
+end, {})
+
+vim.keymap.set('n', '<leader>gh', '<cmd>diffget //2<CR>', { desc = 'Replace with modification in the left pane ' })
+vim.keymap.set('n', '<leader>gl', '<cmd>diffget //3<CR>', { desc = 'Replace with modification in the right pane ' })
+vim.keymap.set('v', '<leader>gh', ':diffget //2<CR>', { desc = 'Replace with modification in the left pane ' })
+vim.keymap.set('v', '<leader>gl', ':diffget //3<CR>', { desc = 'Replace with modification in the right pane ' })
