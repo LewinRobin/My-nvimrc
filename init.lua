@@ -190,10 +190,10 @@ vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+-- vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+-- vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+-- vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -214,6 +214,30 @@ vim.cmd [[
   filetype plugin on
   :let g:csv_delim=','
 ]]
+
+local function repeatable_map(mode, lhs, rhs, opts)
+  opts = opts or {}
+
+  -- Only handle Normal mode for dot-repeat
+  if mode == 'n' then
+    local original_rhs = rhs
+    rhs = function()
+      -- 1. Execute the actual logic
+      if type(original_rhs) == 'string' then
+        -- Handle string commands
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(original_rhs, true, true, true), 'n', false)
+      else
+        -- Handle Lua functions (like dap.continue)
+        original_rhs()
+      end
+
+      -- 2. Register with vim-repeat
+      vim.fn['repeat#set'](vim.api.nvim_replace_termcodes(lhs, true, true, true), vim.v.count)
+    end
+  end
+
+  vim.keymap.set(mode, lhs, rhs, opts)
+end
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -236,6 +260,7 @@ vim.opt.rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  'tpope/vim-repeat',
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'ThePrimeagen/vim-be-good',
@@ -252,557 +277,323 @@ require('lazy').setup({
   -- 'nvim-java',
   -- 'norcalli/nvim-colorizer.lua',
   -- 'mg979/vim-visual-multi',
+  {
+    'mfussenegger/nvim-dap',
+    dependencies = {
+      -- UI for DAP (variables, scopes, watches, call stack, console)
+      {
+        'rcarriga/nvim-dap-ui',
+        dependencies = { 'nvim-neotest/nvim-nio' },
+        config = function()
+          local dap, dapui = require 'dap', require 'dapui'
 
-  -- Original
-  -- {
-  --   'mfussenegger/nvim-dap',
-  --   dependencies = {
-  --     'rcarriga/nvim-dap-ui',
-  --     'nvim-neotest/nvim-nio',
-  --   },
-  --   config = function()
-  --     local dap = require 'dap'
-  --     local dapui = require 'dapui'
-  --     local dap = require 'dap'
-  --     dap.configurations.java = {
-  --       {
-  --         type = 'java',
-  --         request = 'attach',
-  --         name = 'Debug (Attach) - Remote',
-  --         hostName = '127.0.0.1',
-  --         port = 5005,
-  --       },
-  --     }
-  --     dap.listeners.before.attach.dapui_config = function()
-  --       dapui.open()
-  --     end
-  --     dap.listeners.before.launch.dapui_config = function()
-  --       dapui.open()
-  --     end
-  --     dap.listeners.before.event_terminated.dapui_config = function()
-  --       dapui.close()
-  --     end
-  --     dap.listeners.before.event_exited.dapui_config = function()
-  --       dapui.close()
-  --     end
-  --     vim.keymap.set('n', '<leader>dbb', dap.toggle_breakpoint, {})
-  --     vim.keymap.set('n', '<leader>gdap', dap.continue, {})
-  --   end,
-  -- },
-  -- In your plugins.lua or init.lua
-  -- Plugin specifications for lazy.nvim:
-  -- Plugin specifications for lazy.nvim:
+          dapui.setup {
+            icons = { expanded = '▾', collapsed = '▸', current_frame = '▸' },
+            mappings = {
+              expand = { '<CR>', '<2-LeftMouse>' },
+              open = 'o',
+              remove = 'd',
+              edit = 'e',
+              repl = 'r',
+              toggle = 't',
+            },
+            layouts = {
+              {
+                elements = {
+                  { id = 'scopes', size = 0.35 },
+                  { id = 'breakpoints', size = 0.15 },
+                  { id = 'stacks', size = 0.30 },
+                  { id = 'watches', size = 0.20 },
+                },
+                size = 45,
+                position = 'left',
+              },
+              {
+                elements = {
+                  { id = 'repl', size = 0.5 },
+                  { id = 'console', size = 0.5 },
+                },
+                size = 12,
+                position = 'bottom',
+              },
+            },
+            controls = {
+              enabled = true,
+              element = 'repl',
+              icons = {
+                pause = '',
+                play = '',
+                step_into = '',
+                step_over = '',
+                step_out = '',
+                step_back = '',
+                run_last = '↺',
+                terminate = '',
+                disconnect = '',
+              },
+            },
+            floating = {
+              max_height = 0.9,
+              max_width = 0.5,
+              border = 'rounded',
+              mappings = { close = { 'q', '<Esc>' } },
+            },
+            render = {
+              max_type_length = nil,
+              max_value_lines = 100,
+            },
+          }
 
-  -- claude
-  -- {
-  --   'mfussenegger/nvim-dap',
-  --   dependencies = {
-  --     { 'rcarriga/nvim-dap-ui', dependencies = { 'nvim-neotest/nvim-nio' } },
-  --     { 'theHamsta/nvim-dap-virtual-text' },
-  --   },
-  --   config = function()
-  --
-  -- local dap = require('dap')
-  -- local dapui = require('dapui')
-  --
-  -- -- Setup dap-ui
-  -- dapui.setup({
-  --   icons = { expanded = "▾", collapsed = "▸", current_frame = "▸" },
-  --   mappings = {
-  --     expand = { "<CR>", "<2-LeftMouse>" },
-  --     open = "o",
-  --     remove = "d",
-  --     edit = "e",
-  --     repl = "r",
-  --     toggle = "t",
-  --   },
-  --   element_mappings = {},
-  --   expand_lines = vim.fn.has("nvim-0.7") == 1,
-  --   layouts = {
-  --     {
-  --       elements = {
-  --         { id = "scopes", size = 0.25 },
-  --         "breakpoints",
-  --         "stacks",
-  --         "watches",
-  --       },
-  --       size = 40,
-  --       position = "left",
-  --     },
-  --     {
-  --       elements = {
-  --         "repl",
-  --         "console",
-  --       },
-  --       size = 0.25,
-  --       position = "bottom",
-  --     },
-  --   },
-  --   controls = {
-  --     enabled = true,
-  --     element = "repl",
-  --     icons = {
-  --       pause = "",
-  --       play = "",
-  --       step_into = "",
-  --       step_over = "",
-  --       step_out = "",
-  --       step_back = "",
-  --       run_last = "↻",
-  --       terminate = "□",
-  --     },
-  --   },
-  --   floating = {
-  --     max_height = nil,
-  --     max_width = nil,
-  --     border = "single",
-  --     mappings = {
-  --       close = { "q", "<Esc>" },
-  --     },
-  --   },
-  --   windows = { indent = 1 },
-  --   render = {
-  --     max_type_length = nil,
-  --     max_value_lines = 100,
-  --   }
-  -- })
-  --
-  -- -- Setup virtual text
-  -- require('nvim-dap-virtual-text').setup({
-  --   enabled = true,
-  --   enabled_commands = true,
-  --   highlight_changed_variables = true,
-  --   highlight_new_as_changed = false,
-  --   show_stop_reason = true,
-  --   commented = false,
-  --   only_first_definition = true,
-  --   all_references = false,
-  --   filter_references_pattern = '<module',
-  --   virt_text_pos = 'eol',
-  --   all_frames = false,
-  --   virt_lines = false,
-  --   virt_text_win_col = nil
-  -- })
-  --
-  -- -- C/C++ DAP configuration using CodeLLDB (recommended for Windows)
-  -- -- Download CodeLLDB from: https://github.com/vadimcn/vscode-lldb/releases
-  -- -- Extract to a folder like C:\tools\codelldb
-  --
-  -- dap.adapters.codelldb = {
-  --   type = 'server',
-  --   port = "${port}",
-  --   executable = {
-  --     -- Update this path to match your CodeLLDB installation
-  --     command = 'C:\\Users\\jebin\\AppData\\Local\\nvim-data\\mason\\packages\\codelldb\\extension\\adapter\\codelldb.exe',
-  --     args = {"--port", "${port}"},
-  --     -- On Windows, detached = false might work better
-  --     detached = false,
-  --   }
-  -- }
-  --
-  -- -- Alternative: Using cppdbg (Microsoft C++ debugger)
-  -- -- Download from: https://github.com/Microsoft/vscode-cpptools/releases
-  -- dap.adapters.cppdbg = {
-  --   id = 'cppdbg',
-  --   type = 'executable',
-  --   command = 'C:\\tools\\cpptools\\extension\\debugAdapters\\bin\\OpenDebugAD7.exe',
-  --   options = {
-  --     detached = false
-  --   }
-  -- }
-  --
-  -- -- Configuration for C programs
-  -- dap.configurations.c = {
-  --   {
-  --     name = "Launch file (CodeLLDB)",
-  --     type = "codelldb",
-  --     request = "launch",
-  --     program = function()
-  --       local exe_path = vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '\\', 'file')
-  --       -- Check if file exists
-  --       if vim.fn.filereadable(exe_path) == 0 then
-  --         vim.notify("Executable not found: " .. exe_path, vim.log.levels.ERROR)
-  --         return nil
-  --       end
-  --       return exe_path
-  --     end,
-  --     cwd = '${workspaceFolder}',
-  --     stopOnEntry = true, -- Changed to true to pause at entry
-  --     args = {},
-  --     -- For Windows console programs
-  --     console = 'integratedTerminal',
-  --     -- Enable additional logging
-  --     logging = {
-  --       engineLogging = true,
-  --       trace = true,
-  --     },
-  --     -- Uncomment if you want to debug optimized code
-  --     -- justMyCode = false,
-  --   },
-  --   {
-  --     name = "Launch file (cppdbg)",
-  --     type = "cppdbg",
-  --     request = "launch",
-  --     program = function()
-  --       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '\\', 'file')
-  --     end,
-  --     cwd = '${workspaceFolder}',
-  --     stopAtEntry = false,
-  --     args = {},
-  --     -- Windows specific
-  --     console = "integratedTerminal",
-  --     MIMode = "gdb",
-  --     miDebuggerPath = "C:\\msys64\\mingw64\\bin\\gdb.exe", -- Update path as needed
-  --     setupCommands = {
-  --       {
-  --         description = "Enable pretty-printing for gdb",
-  --         text = "-enable-pretty-printing",
-  --         ignoreFailures = true
-  --       }
-  --     },
-  --   },
-  --   {
-  --     name = "Attach to process",
-  --     type = "codelldb",
-  --     request = "attach",
-  --     pid = function()
-  --       local handle = io.popen('tasklist /fo csv | findstr /C:".exe"')
-  --       local result = handle:read("*a")
-  --       handle:close()
-  --       return tonumber(vim.fn.input('Process ID: '))
-  --     end,
-  --     args = {},
-  --   }
-  -- }
-  --
-  -- -- Copy C config to CPP
-  -- dap.configurations.cpp = dap.configurations.c
-  --
-  -- -- Auto open/close dapui
-  -- dap.listeners.after.event_initialized["dapui_config"] = function()
-  --   dapui.open()
-  -- end
-  -- dap.listeners.before.event_terminated["dapui_config"] = function()
-  --   dapui.close()
-  -- end
-  -- dap.listeners.before.event_exited["dapui_config"] = function()
-  --   dapui.close()
-  -- end
-  --
-  -- -- Key mappings
-  -- vim.keymap.set('n', '<F5>', function() dap.continue() end, { desc = 'Debug: Start/Continue' })
-  -- vim.keymap.set('n', '<F10>', function() dap.step_over() end, { desc = 'Debug: Step Over' })
-  -- vim.keymap.set('n', '<F11>', function() dap.step_into() end, { desc = 'Debug: Step Into' })
-  -- vim.keymap.set('n', '<F12>', function() dap.step_out() end, { desc = 'Debug: Step Out' })
-  -- vim.keymap.set('n', '<Leader>b', function() dap.toggle_breakpoint() end, { desc = 'Debug: Toggle Breakpoint' })
-  -- vim.keymap.set('n', '<Leader>B', function() dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, { desc = 'Debug: Set Conditional Breakpoint' })
-  -- vim.keymap.set('n', '<Leader>lp', function() dap.set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end, { desc = 'Debug: Set Log Point' })
-  -- vim.keymap.set('n', '<Leader>dr', function() dap.repl.open() end, { desc = 'Debug: Open REPL' })
-  -- vim.keymap.set('n', '<Leader>dl', function() dap.run_last() end, { desc = 'Debug: Run Last' })
-  -- vim.keymap.set('n', '<Leader>dt', function() dapui.toggle() end, { desc = 'Debug: Toggle UI' })
-  --
-  -- -- Visual mode mappings for hover
-  -- vim.keymap.set({'n', 'v'}, '<Leader>dh', function()
-  --   require('dap.ui.widgets').hover()
-  -- end, { desc = 'Debug: Hover' })
-  -- vim.keymap.set({'n', 'v'}, '<Leader>dp', function()
-  --   require('dap.ui.widgets').preview()
-  -- end, { desc = 'Debug: Preview' })
-  --
-  -- -- Frame and scope widgets
-  -- vim.keymap.set('n', '<Leader>df', function()
-  --   local widgets = require('dap.ui.widgets')
-  --   widgets.centered_float(widgets.frames)
-  -- end, { desc = 'Debug: Frames' })
-  -- vim.keymap.set('n', '<Leader>ds', function()
-  --   local widgets = require('dap.ui.widgets')
-  --   widgets.centered_float(widgets.scopes)
-  -- end, { desc = 'Debug: Scopes' })
-  --
-  -- -- Compile and debug function
-  -- function CompileAndDebug()
-  --   local file = vim.fn.expand('%:p')
-  --   local file_without_ext = vim.fn.expand('%:p:r')
-  --   local exe_file = file_without_ext .. '.exe'
-  --
-  --   -- Check if source file exists
-  --   if vim.fn.filereadable(file) == 0 then
-  --     vim.notify("Source file not found: " .. file, vim.log.levels.ERROR)
-  --     return
-  --   end
-  --
-  --   -- Compile with debug symbols and additional flags
-  --   local compile_cmd = string.format('gcc -g -O0 -Wall -o "%s" "%s"', exe_file, file)
-  --
-  --   print("Compiling: " .. compile_cmd)
-  --   local result = os.execute(compile_cmd)
-  --
-  --   if result == 0 then
-  --     print("Compilation successful!")
-  --
-  --     -- Verify the executable was created
-  --     if vim.fn.filereadable(exe_file) == 0 then
-  --       vim.notify("Executable was not created: " .. exe_file, vim.log.levels.ERROR)
-  --       return
-  --     end
-  --
-  --     -- Set the program path and start debugging
-  --     dap.configurations.c[1].program = exe_file
-  --
-  --     -- Add a small delay to ensure file system sync
-  --     vim.defer_fn(function()
-  --       dap.continue()
-  --     end, 100)
-  --   else
-  --     vim.notify("Compilation failed! Check your code for errors.", vim.log.levels.ERROR)
-  --   end
-  -- end
-  --
-  -- vim.keymap.set('n', '<Leader>dc', CompileAndDebug, { desc = 'Debug: Compile and Debug' })
-  --
-  -- -- Sign configuration
-  -- vim.fn.sign_define('DapBreakpoint', {text='🔴', texthl='', linehl='', numhl=''})
-  -- vim.fn.sign_define('DapBreakpointCondition', {text='🟡', texthl='', linehl='', numhl=''})
-  -- vim.fn.sign_define('DapLogPoint', {text='📝', texthl='', linehl='', numhl=''})
-  -- vim.fn.sign_define('DapStopped', {text='➡️', texthl='', linehl='DapStoppedLine', numhl=''})
-  -- vim.fn.sign_define('DapBreakpointRejected', {text='❌', texthl='', linehl='', numhl=''})
-  --
-  -- -- Highlight groups
-  -- vim.api.nvim_set_hl(0, 'DapStoppedLine', { bg = '#2d3748' })
-  --   end,
-  -- },
+          -- Auto-open/close UI on session start/end
+          dap.listeners.after.event_initialized['dapui_config'] = function()
+            dapui.open()
+          end
+          dap.listeners.before.event_terminated['dapui_config'] = function()
+            dapui.close()
+          end
+          dap.listeners.before.event_exited['dapui_config'] = function()
+            dapui.close()
+          end
+        end,
+      },
 
-  -- primeagen version
-  -- {
-  --         "mfussenegger/nvim-dap",
-  --         lazy = false,
-  --         config = function()
-  --             local dap = require("dap")
-  --             dap.set_log_level("DEBUG")
-  --
-  --             vim.keymap.set("n", "<F8>", dap.continue, { desc = "Debug: Continue" })
-  --             vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Debug: Step Over" })
-  --             vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Debug: Step Into" })
-  --             vim.keymap.set("n", "<F12>", dap.step_out, { desc = "Debug: Step Out" })
-  --             vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "Debug: Toggle Breakpoint" })
-  --             vim.keymap.set("n", "<leader>B", function()
-  --                 dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
-  --             end, { desc = "Debug: Set Conditional Breakpoint" })
-  --         end
-  --     },
+      -- Inline virtual text (variable values next to code while paused)
+      {
+        'theHamsta/nvim-dap-virtual-text',
+        config = function()
+          require('nvim-dap-virtual-text').setup {
+            enabled = true,
+            enabled_commands = true,
+            highlight_changed_variables = true,
+            highlight_new_as_changed = false,
+            show_stop_reason = true,
+            commented = false,
+            only_first_definition = true,
+            all_references = false,
+            filter_references_pattern = '<module',
+            virt_text_pos = 'eol', -- inline after the line
+            all_frames = false,
+            virt_lines = false,
+            virt_text_win_col = nil,
+          }
+        end,
+      },
 
-  -- {
-  --     "rcarriga/nvim-dap-ui",
-  --     dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
-  --     config = function()
-  --         local dap = require("dap")
-  --         local dapui = require("dapui")
-  --         local function layout(name)
-  --             return {
-  --                 elements = {
-  --                     { id = name },
-  --                 },
-  --                 enter = true,
-  --                 size = 40,
-  --                 position = "right",
-  --             }
-  --         end
-  --         local name_to_layout = {
-  --             repl = { layout = layout("repl"), index = 0 },
-  --             stacks = { layout = layout("stacks"), index = 0 },
-  --             scopes = { layout = layout("scopes"), index = 0 },
-  --             console = { layout = layout("console"), index = 0 },
-  --             watches = { layout = layout("watches"), index = 0 },
-  --             breakpoints = { layout = layout("breakpoints"), index = 0 },
-  --         }
-  --         local layouts = {}
-  --
-  --         for name, config in pairs(name_to_layout) do
-  --             table.insert(layouts, config.layout)
-  --             name_to_layout[name].index = #layouts
-  --         end
-  --
-  --         local function toggle_debug_ui(name)
-  --             dapui.close()
-  --             local layout_config = name_to_layout[name]
-  --
-  --             if layout_config == nil then
-  --                 error(string.format("bad name: %s", name))
-  --             end
-  --
-  --             local uis = vim.api.nvim_list_uis()[1]
-  --             if uis ~= nil then
-  --                 layout_config.size = uis.width
-  --             end
-  --
-  --             pcall(dapui.toggle, layout_config.index)
-  --         end
-  --
-  --         vim.keymap.set("n", "<leader>dr", function() toggle_debug_ui("repl") end, { desc = "Debug: toggle repl ui" })
-  --         vim.keymap.set("n", "<leader>ds", function() toggle_debug_ui("stacks") end,
-  --             { desc = "Debug: toggle stacks ui" })
-  --         vim.keymap.set("n", "<leader>dw", function() toggle_debug_ui("watches") end,
-  --             { desc = "Debug: toggle watches ui" })
-  --         vim.keymap.set("n", "<leader>db", function() toggle_debug_ui("breakpoints") end,
-  --             { desc = "Debug: toggle breakpoints ui" })
-  --         vim.keymap.set("n", "<leader>dS", function() toggle_debug_ui("scopes") end,
-  --             { desc = "Debug: toggle scopes ui" })
-  --         vim.keymap.set("n", "<leader>dc", function() toggle_debug_ui("console") end,
-  --             { desc = "Debug: toggle console ui" })
-  --
-  --         vim.api.nvim_create_autocmd("BufEnter", {
-  --             group = "DapGroup",
-  --             pattern = "*dap-repl*",
-  --             callback = function()
-  --                 vim.wo.wrap = true
-  --             end,
-  --         })
-  --
-  --         vim.api.nvim_create_autocmd("BufWinEnter", create_nav_options("dap-repl"))
-  --         vim.api.nvim_create_autocmd("BufWinEnter", create_nav_options("DAP Watches"))
-  --
-  --         dapui.setup({
-  --             layouts = layouts,
-  --             enter = true,
-  --         })
-  --
-  --         dap.listeners.before.event_terminated.dapui_config = function()
-  --             dapui.close()
-  --         end
-  --         dap.listeners.before.event_exited.dapui_config = function()
-  --             dapui.close()
-  --         end
-  --
-  --         dap.listeners.after.event_output.dapui_config = function(_, body)
-  --             if body.category == "console" then
-  --                 dapui.eval(body.output) -- Sends stdout/stderr to Console
-  --             end
-  --         end
-  --     end,
-  -- },
+      -- Auto-install DAP adapters via Mason
+      {
+        'jay-babu/mason-nvim-dap.nvim',
+        dependencies = { 'williamboman/mason.nvim' },
+        config = function()
+          require('mason-nvim-dap').setup {
+            -- Adapters Mason will auto-install on first use
+            ensure_installed = {
+              'codelldb', -- C, C++, Rust
+              'debugpy', -- Python
+              'js-debug-adapter', -- JS, TS, Node
+              'delve', -- Go
+            },
+            automatic_installation = true,
+            handlers = {}, -- use defaults — overridden per-lang below
+          }
+        end,
+      },
 
-  -- {
-  --     "jay-babu/mason-nvim-dap.nvim",
-  --     dependencies = {
-  --         "williamboman/mason.nvim",
-  --         "mfussenegger/nvim-dap",
-  --         "neovim/nvim-lspconfig",
-  --     },
-  --     config = function()
-  --         require("mason-nvim-dap").setup({
-  --             ensure_installed = {
-  --                 "delve",
-  --             },
-  --             automatic_installation = true,
-  --             handlers = {
-  --                 function(config)
-  --                     require("mason-nvim-dap").default_setup(config)
-  --                 end,
-  --                 delve = function(config)
-  --                     table.insert(config.configurations, 1, {
-  --                         args = function() return vim.split(vim.fn.input("args> "), " ") end,
-  --                         type = "delve",
-  --                         name = "file",
-  --                         request = "launch",
-  --                         program = "${file}",
-  --                         outputMode = "remote",
-  --                     })
-  --                     table.insert(config.configurations, 1, {
-  --                         args = function() return vim.split(vim.fn.input("args> "), " ") end,
-  --                         type = "delve",
-  --                         name = "file args",
-  --                         request = "launch",
-  --                         program = "${file}",
-  --                         outputMode = "remote",
-  --                     })
-  --                     require("mason-nvim-dap").default_setup(config)
-  --                 end,
-  --             },
-  --         })
-  --     end,
-  -- },
+      -- Language-specific: Python
+      {
+        'mfussenegger/nvim-dap-python',
+        ft = 'python',
+        config = function()
+          local mason_path = vim.fn.stdpath 'data' .. '/mason/packages/debugpy/venv/bin/python'
+          require('dap-python').setup(mason_path)
+          require('dap-python').test_runner = 'pytest'
+        end,
+      },
 
-  -- teejs version
-  -- { --commented by Lewin Robin. Lot of errors.
-  --   -- NOTE: Yes, you can install new plugins here!
-  --   'mfussenegger/nvim-dap',
-  --   -- NOTE: And you can specify dependencies as well
-  --   dependencies = {
-  --     -- Creates a beautiful debugger UI
-  --     'rcarriga/nvim-dap-ui',
-  --
-  --     -- Installs the debug adapters for you
-  --     'williamboman/mason.nvim',
-  --     'jay-babu/mason-nvim-dap.nvim',
-  --
-  --     -- Add your own debuggers here
-  --     'leoluz/nvim-dap-go',
-  --     'nvim-neotest/nvim-nio',
-  --   },
-  --   config = function()
-  --     local dap = require 'dap'
-  --     local dapui = require 'dapui'
-  --
-  --     require('mason-nvim-dap').setup {
-  --       -- Makes a best effort to setup the various debuggers with
-  --       -- reasonable debug configurations
-  --       automatic_setup = true,
-  --
-  --       -- You can provide additional configuration to the handlers,
-  --       -- see mason-nvim-dap README for more information
-  --       handlers = {},
-  --
-  --       -- You'll need to check that you have the required things installed
-  --       -- online, please don't ask me how to install them :)
-  --       ensure_installed = {
-  --         -- Update this to ensure that you have the debuggers for the langs you want
-  --         'delve',
-  --       },
-  --     }
-  --
-  --     -- Basic debugging keymaps, feel free to change to your liking!
-  --     vim.keymap.set('n', 'gbug', dap.continue, { desc = 'Debug: Start/Continue' })
-  --     vim.keymap.set('n', '<F1>', dap.step_into, { desc = 'Debug: Step Into' })
-  --     vim.keymap.set('n', '<F2>', dap.step_over, { desc = 'Debug: Step Over' })
-  --     vim.keymap.set('n', '<F3>', dap.step_out, { desc = 'Debug: Step Out' })
-  --     vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint, { desc = 'Debug: Toggle Breakpoint' })
-  --     vim.keymap.set('n', '<leader>B', function()
-  --       dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
-  --     end, { desc = 'Debug: Set Breakpoint' })
-  --
-  --     -- Dap UI setup
-  --     -- For more information, see |:help nvim-dap-ui|
-  --     dapui.setup {
-  --       -- Set icons to characters that are more likely to work in every terminal.
-  --       --    Feel free to remove or use ones that you like more! :)
-  --       --    Don't feel like these are good choices.
-  --       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
-  --       controls = {
-  --         icons = {
-  --           pause = '⏸',
-  --           play = '▶',
-  --           step_into = '⏎',
-  --           step_over = '⏭',
-  --           step_out = '⏮',
-  --           step_back = 'b',
-  --           run_last = '▶▶',
-  --           terminate = '⏹',
-  --           disconnect = '⏏',
-  --         },
-  --       },
-  --     }
-  --
-  --     -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-  --     vim.keymap.set('n', '<F7>', dapui.toggle, { desc = 'Debug: See last session result.' })
-  --
-  --     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-  --     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-  --     dap.listeners.before.event_exited['dapui_config'] = dapui.close
-  --
-  --     -- Install golang specific config
-  --     require('dap-go').setup()
-  --   end,
-  -- },
+      -- Language-specific: Go
+      {
+        'leoluz/nvim-dap-go',
+        ft = 'go',
+        config = function()
+          require('dap-go').setup {
+            dap_configurations = {
+              {
+                type = 'go',
+                name = 'Attach remote',
+                mode = 'remote',
+                request = 'attach',
+              },
+            },
+            delve = {
+              path = 'dlv',
+              initialize_timeout_sec = 20,
+              port = '${port}',
+              args = {},
+              build_flags = '',
+            },
+          }
+        end,
+      },
+
+      -- Telescope integration: browse/toggle breakpoints
+      { 'nvim-telescope/telescope-dap.nvim' },
+
+      -- Persistent breakpoints across sessions
+      {
+        'Weissle/persistent-breakpoints.nvim',
+        config = function()
+          require('persistent-breakpoints').setup {
+            save_dir = vim.fn.stdpath 'data' .. '/nvim_checkpoints',
+            load_breakpoints_event = { 'BufReadPost' },
+            perf_record = false,
+          }
+        end,
+      },
+    },
+
+    config = function()
+      local dap = require 'dap'
+      local dapui = require 'dapui'
+      local pb = require 'persistent-breakpoints.api'
+
+      -- ── Signs ────────────────────────────────────────────────────────────
+      vim.fn.sign_define('DapBreakpoint', { text = '●', texthl = 'DiagnosticError', linehl = '', numhl = '' })
+      vim.fn.sign_define('DapBreakpointCondition', { text = '◉', texthl = 'DiagnosticWarn', linehl = '', numhl = '' })
+      vim.fn.sign_define('DapLogPoint', { text = '◎', texthl = 'DiagnosticInfo', linehl = '', numhl = '' })
+      vim.fn.sign_define('DapStopped', { text = '▶', texthl = 'DiagnosticOk', linehl = 'DiffAdd', numhl = '' })
+      vim.fn.sign_define('DapBreakpointRejected', { text = '✗', texthl = 'DiagnosticError', linehl = '', numhl = '' })
+
+      -- ── C / C++ / Rust via codelldb ───────────────────────────────────────
+      local codelldb_path = vim.fn.stdpath 'data' .. '/mason/packages/codelldb/extension/adapter/codelldb'
+      local liblldb_path = vim.fn.stdpath 'data' .. '/mason/packages/codelldb/extension/lldb/lib/liblldb.so'
+
+      dap.adapters.codelldb = {
+        type = 'server',
+        port = '${port}',
+        executable = {
+          command = codelldb_path,
+          args = { '--port', '${port}' },
+        },
+      }
+
+      for _, lang in ipairs { 'c', 'cpp', 'rust' } do
+        dap.configurations[lang] = {
+          {
+            name = 'Launch file',
+            type = 'codelldb',
+            request = 'launch',
+            program = function()
+              return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+            end,
+            cwd = '${workspaceFolder}',
+            stopOnEntry = false,
+            args = {},
+          },
+          {
+            name = 'Attach to process',
+            type = 'codelldb',
+            request = 'attach',
+            pid = require('dap.utils').pick_process,
+            args = {},
+          },
+        }
+      end
+
+      -- ── JavaScript / TypeScript / Node ───────────────────────────────────
+      local js_adapter_path = vim.fn.stdpath 'data' .. '/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js'
+
+      for _, adapter in ipairs { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' } do
+        dap.adapters[adapter] = {
+          type = 'server',
+          host = 'localhost',
+          port = '${port}',
+          executable = {
+            command = 'node',
+            args = { js_adapter_path, '${port}' },
+          },
+        }
+      end
+
+      for _, lang in ipairs { 'javascript', 'typescript', 'typescriptreact', 'javascriptreact' } do
+        dap.configurations[lang] = {
+          {
+            type = 'pwa-node',
+            request = 'launch',
+            name = 'Launch Node file',
+            program = '${file}',
+            cwd = '${workspaceFolder}',
+            sourceMaps = true,
+          },
+          {
+            type = 'pwa-node',
+            request = 'attach',
+            name = 'Attach to Node process',
+            processId = require('dap.utils').pick_process,
+            cwd = '${workspaceFolder}',
+            sourceMaps = true,
+          },
+          {
+            type = 'pwa-chrome',
+            request = 'launch',
+            name = 'Launch Chrome (localhost:3000)',
+            url = 'http://localhost:3000',
+            webRoot = '${workspaceFolder}',
+            userDataDir = false,
+          },
+        }
+      end
+
+      -- Session control (mnemonic: c=continue, q=quit, r=restart, x=run-to-cursor)
+      vim.keymap.set('n', '<leader>Dc', dap.continue, { desc = 'DAP: Continue / Start' })
+      vim.keymap.set('n', '<leader>Dq', dap.terminate, { desc = 'DAP: Stop session' })
+      vim.keymap.set('n', '<leader>Dr', dap.restart, { desc = 'DAP: Restart session' })
+      vim.keymap.set('n', '<leader>Dx', dap.run_to_cursor, { desc = 'DAP: Run to cursor' })
+
+      -- Step control (mnemonic: n=next/over, i=into, o=out)
+      repeatable_map('n', '<leader>Dn', dap.step_over, { desc = 'DAP: Step over' })
+      repeatable_map('n', '<leader>Di', dap.step_into, { desc = 'DAP: Step into' })
+      repeatable_map('n', '<leader>Do', dap.step_out, { desc = 'DAP: Step out' })
+
+      -- Breakpoints (persistent — survive nvim restarts)
+      repeatable_map('n', '<leader>Db', pb.toggle_breakpoint, { desc = 'DAP: Toggle breakpoint' })
+      vim.keymap.set('n', '<leader>DB', function()
+        pb.set_conditional_breakpoint(vim.fn.input 'Condition: ')
+      end, { desc = 'DAP: Conditional breakpoint' })
+      vim.keymap.set('n', '<leader>Dl', function()
+        dap.set_breakpoint(nil, nil, vim.fn.input 'Log message: ')
+      end, { desc = 'DAP: Log point' })
+      vim.keymap.set('n', '<leader>DX', pb.clear_all_breakpoints, { desc = 'DAP: Clear all breakpoints' })
+
+      -- UI / inspect
+      vim.keymap.set('n', '<leader>Du', dapui.toggle, { desc = 'DAP: Toggle UI' })
+      vim.keymap.set('n', '<leader>De', dapui.eval, { desc = 'DAP: Eval expression' })
+      vim.keymap.set('v', '<leader>De', dapui.eval, { desc = 'DAP: Eval selection' })
+      vim.keymap.set('n', '<leader>Dw', require('dap.ui.widgets').hover, { desc = 'DAP: Hover widget' })
+      vim.keymap.set('n', '<leader>Dv', function()
+        local widgets = require 'dap.ui.widgets'
+        widgets.centered_float(widgets.scopes)
+      end, { desc = 'DAP: Float scopes' })
+      vim.keymap.set('n', '<leader>DR', dap.repl.open, { desc = 'DAP: Open REPL' })
+
+      -- Telescope DAP pickers
+      vim.keymap.set('n', '<leader>Dtb', function()
+        require('telescope').extensions.dap.list_breakpoints()
+      end, { desc = 'DAP: Telescope breakpoints' })
+      vim.keymap.set('n', '<leader>Dtf', function()
+        require('telescope').extensions.dap.frames()
+      end, { desc = 'DAP: Telescope frames' })
+      vim.keymap.set('n', '<leader>Dtv', function()
+        require('telescope').extensions.dap.variables()
+      end, { desc = 'DAP: Telescope variables' })
+      vim.keymap.set('n', '<leader>Dtc', function()
+        require('telescope').extensions.dap.commands()
+      end, { desc = 'DAP: Telescope commands' })
+
+      -- Load telescope-dap extension
+      pcall(function()
+        require('telescope').load_extension 'dap'
+      end)
+    end,
+  },
   {
     'akinsho/flutter-tools.nvim',
     lazy = false,
@@ -812,39 +603,7 @@ require('lazy').setup({
     },
     config = true,
   },
-  -- {
-  --   'epwalsh/pomo.nvim',
-  --   version = '*', -- Recommended, use latest release instead of latest commit
-  --   lazy = true,
-  --   cmd = { 'TimerStart', 'TimerRepeat' },
-  --   dependencies = {
-  --     -- Optional, but highly recommended if you want to use the "Default" timer
-  --     'rcarriga/nvim-notify',
-  --   },
-  --   opts = {
-  --     -- See below for full list of options 👇
-  --   },
-  -- },
 
-  -- { -- This plugin
-  --   'Zeioth/compiler.nvim',
-  --   cmd = { 'CompilerOpen', 'CompilerToggleResults', 'CompilerRedo' },
-  --   dependencies = { 'stevearc/overseer.nvim' },
-  --   opts = {},
-  -- },
-  { -- The task runner we use
-    'stevearc/overseer.nvim',
-    commit = '68a2d344cea4a2e11acfb5690dc8ecd1a1ec0ce0',
-    cmd = { 'CompilerOpen', 'CompilerToggleResults', 'CompilerRedo' },
-    opts = {
-      task_list = {
-        direction = 'bottom',
-        min_height = 25,
-        max_height = 25,
-        default_detail = 1,
-      },
-    },
-  },
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -1456,17 +1215,17 @@ require('lazy').setup({
   --   end,
   -- },
 
-  { -- Highlight, edit, and navigate code
-    'nvim-treesitter/nvim-treesitter',
-    build = ':TSUpdate',
-    main = 'nvim-treesitter', -- <-- add this line
-    opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc' },
-      auto_install = true,
-      highlight = { enable = true },
-      indent = { enable = true },
-    },
-  },
+  -- { -- Highlight, edit, and navigate code -- commented by Lewin  as it was deprecated
+  --   'nvim-treesitter/nvim-treesitter',
+  --   build = ':TSUpdate',
+  --   main = 'nvim-treesitter', -- <-- add this line
+  --   opts = {
+  --     ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc' },
+  --     auto_install = true,
+  --     highlight = { enable = true },
+  --     indent = { enable = true },
+  --   },
+  -- },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -1799,95 +1558,95 @@ require('lazy').setup({
       },
     },
   },
-  {
-    'yetone/avante.nvim',
-    event = 'VeryLazy',
-    version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
-    keys = {
-      {
-        '<leader>a+',
-        function()
-          local tree_ext = require 'avante.extensions.nvim_tree'
-          tree_ext.add_file()
-        end,
-        desc = 'Select file in NvimTree',
-        ft = 'NvimTree',
-      },
-      {
-        '<leader>a-',
-        function()
-          local tree_ext = require 'avante.extensions.nvim_tree'
-          tree_ext.remove_file()
-        end,
-        desc = 'Deselect file in NvimTree',
-        ft = 'NvimTree',
-      },
-    },
-    opts = {
-      -- add any opts here
-      -- for example
-      -- provider = "openai",
-      -- openai = {
-      --   endpoint = "https://api.openai.com/v1",
-      --   model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
-      --   timeout = 30000, -- timeout in milliseconds
-      --   temperature = 0, -- adjust if needed
-      --   max_tokens = 4096,
-      provider = 'gemini',
-      mode = 'legacy', -- defult is agentic which will use a lot of modes
-      providers = {
-        gemini = {
-          model = 'gemini-3-flash-preview', -- Added "-preview"
-          max_tokens = 8192,
-          temperature = 1, -- Gemini 3 performs best at 1.0
-        },
-      },
-      selector = {
-        exclude_auto_select = { 'NvimTree' },
-      },
-    },
-    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-    build = 'make',
-    -- build = 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false', -- for windows
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter',
-      'stevearc/dressing.nvim',
-      'nvim-lua/plenary.nvim',
-      'MunifTanjim/nui.nvim',
-      --- The below dependencies are optional,
-      'echasnovski/mini.pick', -- for file_selector provider mini.pick
-      'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
-      'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
-      'ibhagwan/fzf-lua', -- for file_selector provider fzf
-      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
-      'zbirenbaum/copilot.lua', -- for providers='copilot'
-      {
-        -- support for image pasting
-        'HakonHarnes/img-clip.nvim',
-        event = 'VeryLazy',
-        opts = {
-          -- recommended settings
-          default = {
-            embed_image_as_base64 = false,
-            prompt_for_file_name = false,
-            drag_and_drop = {
-              insert_mode = true,
-            },
-            -- required for Windows users
-            -- use_absolute_path = true,
-          },
-        },
-      },
-      {
-        -- Make sure to set this up properly if you have lazy=true
-        'MeanderingProgrammer/render-markdown.nvim',
-        opts = {
-          file_types = { 'Avante' },
-        },
-        ft = { 'Avante' },
-      },
-    },
-  },
+  -- {
+  --   'yetone/avante.nvim', -- Commented out by Lewin Cause i am not using it.
+  --   event = 'VeryLazy',
+  --   version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
+  --   keys = {
+  --     {
+  --       '<leader>a+',
+  --       function()
+  --         local tree_ext = require 'avante.extensions.nvim_tree'
+  --         tree_ext.add_file()
+  --       end,
+  --       desc = 'Select file in NvimTree',
+  --       ft = 'NvimTree',
+  --     },
+  --     {
+  --       '<leader>a-',
+  --       function()
+  --         local tree_ext = require 'avante.extensions.nvim_tree'
+  --         tree_ext.remove_file()
+  --       end,
+  --       desc = 'Deselect file in NvimTree',
+  --       ft = 'NvimTree',
+  --     },
+  --   },
+  --   opts = {
+  --     -- add any opts here
+  --     -- for example
+  --     -- provider = "openai",
+  --     -- openai = {
+  --     --   endpoint = "https://api.openai.com/v1",
+  --     --   model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+  --     --   timeout = 30000, -- timeout in milliseconds
+  --     --   temperature = 0, -- adjust if needed
+  --     --   max_tokens = 4096,
+  --     provider = 'gemini',
+  --     mode = 'legacy', -- defult is agentic which will use a lot of modes
+  --     providers = {
+  --       gemini = {
+  --         model = 'gemini-3-flash-preview', -- Added "-preview"
+  --         max_tokens = 8192,
+  --         temperature = 1, -- Gemini 3 performs best at 1.0
+  --       },
+  --     },
+  --     selector = {
+  --       exclude_auto_select = { 'NvimTree' },
+  --     },
+  --   },
+  --   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+  --   build = 'make',
+  --   -- build = 'powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false', -- for windows
+  --   dependencies = {
+  --     'nvim-treesitter/nvim-treesitter',
+  --     'stevearc/dressing.nvim',
+  --     'nvim-lua/plenary.nvim',
+  --     'MunifTanjim/nui.nvim',
+  --     --- The below dependencies are optional,
+  --     'echasnovski/mini.pick', -- for file_selector provider mini.pick
+  --     'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
+  --     'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+  --     'ibhagwan/fzf-lua', -- for file_selector provider fzf
+  --     'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
+  --     'zbirenbaum/copilot.lua', -- for providers='copilot'
+  --     {
+  --       -- support for image pasting
+  --       'HakonHarnes/img-clip.nvim',
+  --       event = 'VeryLazy',
+  --       opts = {
+  --         -- recommended settings
+  --         default = {
+  --           embed_image_as_base64 = false,
+  --           prompt_for_file_name = false,
+  --           drag_and_drop = {
+  --             insert_mode = true,
+  --           },
+  --           -- required for Windows users
+  --           -- use_absolute_path = true,
+  --         },
+  --       },
+  --     },
+  --     {
+  --       -- Make sure to set this up properly if you have lazy=true
+  --       'MeanderingProgrammer/render-markdown.nvim',
+  --       opts = {
+  --         file_types = { 'Avante' },
+  --       },
+  --       ft = { 'Avante' },
+  --     },
+  --   },
+  -- },
   {
     'github/copilot.vim',
     config = function()
@@ -2277,6 +2036,75 @@ require('lazy').setup({
         'filetype',
       },
     },
+  },
+  {
+    'CopilotC-Nvim/CopilotChat.nvim',
+    -- branch = "canary", -- REMOVE THIS: canary is deprecated, use main
+    dependencies = {
+      { 'github/copilot.vim' },
+      { 'nvim-lua/plenary.nvim' },
+      { 'nvim-telescope/telescope.nvim' },
+    },
+    opts = {
+      model = 'gpt-5-mini',
+      question_header = '  User ',
+      answer_header = '  Copilot ',
+      window = {
+        layout = 'vertical',
+        width = 0.4,
+      },
+      -- The New Way to set Telescope as the handler
+      selection_handlers = {
+        telescope = function()
+          return require 'CopilotChat.codecompanion.telescope' -- New 2026 path or use the built-in picker
+        end,
+      },
+    },
+    config = function(_, opts)
+      local chat = require 'CopilotChat'
+      chat.setup(opts)
+    end,
+    keys = {
+      { '<leader>aa', '<cmd>CopilotChatToggle<cr>', desc = 'AI Chat', mode = { 'n', 'v' } },
+      -- Fixed Telescope Action Palette Call
+      {
+        '<leader>as',
+        function()
+          local actions = require 'CopilotChat.actions'
+          -- In modern versions, you just call pick on the actions directly
+          actions.pick(actions.prompt_actions())
+        end,
+        desc = 'AI Search Actions',
+        mode = { 'n', 'v' },
+      },
+      {
+        '<leader>ae',
+        function()
+          local input = vim.fn.input 'AI Edit: '
+          if input ~= '' then
+            require('CopilotChat').ask(input, { selection = require('CopilotChat.select').buffer })
+          end
+        end,
+        desc = 'AI Inline Edit',
+        mode = { 'n', 'v' },
+      },
+    },
+  },
+  {
+    'romus204/tree-sitter-manager.nvim',
+    dependencies = {},
+    config = function()
+      require('tree-sitter-manager').setup {
+        -- Automatically install missing parsers when you open a new filetype
+        auto_install = true,
+
+        -- Optional: list of parsers to always have installed
+        ensure_installed = { 'lua', 'vim', 'vimdoc', 'query', 'markdown', 'python', 'dart' },
+
+        -- Enable highlighting by default
+        highlight = true,
+      }
+    end,
   },
 }, {
   ui = {
@@ -2724,3 +2552,9 @@ vim.keymap.set('n', '<leader>gh', '<cmd>diffget //2<CR>', { desc = 'Replace with
 vim.keymap.set('n', '<leader>gl', '<cmd>diffget //3<CR>', { desc = 'Replace with modification in the right pane ' })
 vim.keymap.set('v', '<leader>gh', ':diffget //2<CR>', { desc = 'Replace with modification in the left pane ' })
 vim.keymap.set('v', '<leader>gl', ':diffget //3<CR>', { desc = 'Replace with modification in the right pane ' })
+
+vim.api.nvim_create_autocmd('FileType', {
+  callback = function()
+    pcall(vim.treesitter.start)
+  end,
+})

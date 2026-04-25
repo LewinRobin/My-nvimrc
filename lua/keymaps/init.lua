@@ -1,4 +1,4 @@
--- vim.keymap.set('n', '<C-b>', vim.cmd.Lex)
+-- vim.keymap.set('n', '<C-b>', vim.cmd.Lex)
 
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
@@ -77,15 +77,15 @@ vim.keymap.set('v', '<leader>gcu', 'O<Esc>lxxxgvO<Esc>xxx<Esc>', { desc = 'React
 --   ':!cd %:h<CR>:!gcc % -g<CR><C-W>v:term<CR>igdb ./a.exe<CR>break main<CR>run<CR>define hook-next<CR>info locals<CR>end<CR>define hook-step<CR>info locals<CR>end<CR>define hook-continue<CR>info locals<CR>end<CR>',
 --   { desc = 'gdb sidescreen' }
 -- )
-vim.keymap.set('n', '<leader>gdbv', '<C-W>v:term<CR>imake gdb<CR>gdb ./a.exe<CR>break main<CR>run<CR>', { desc = 'gdb sidescreen' })
+-- vim.keymap.set('n', '<leader>gdbv', '<C-W>v:term<CR>imake gdb<CR>gdb ./a.exe<CR>break main<CR>run<CR>', { desc = 'gdb sidescreen' })
 -- vim.keymap.set(
 --   'n',
 --   '<leader>gdbf',
 --   ':!cd %:h<CR>:!gcc % -g<CR>:term<CR>igdb ./a.exe<CR>break 1<CR>run<CR>define hook-next<CR>info locals<CR>end<CR>define hook-step<CR>info locals<CR>end<CR>define hook-continue<CR>info locals<CR>end<CR>',
 --   { desc = 'gdb fullscreen' }
 -- )
-vim.keymap.set('n', '<leader>gdbf', ':term<CR>imake gdb<CR>gdb ./a.exe<CR>break main<CR>run<CR>', { desc = 'gdb fullscreen' })
-vim.keymap.set('i', '<leader>gdbf', ':term<CR>imake gdb<CR>gdb ./a.exe<CR>break main<CR>run<CR>', { desc = 'gdb fullscreen' })
+-- vim.keymap.set('i', '<leader>gdbf', ':term<CR>imake gdb<CR>gdb ./a.exe<CR>break main<CR>run<CR>', { desc = 'gdb fullscreen' })
+-- vim.keymap.set('n', '<leader>gdbf', ':term<CR>imake gdb<CR>gdb ./a.exe<CR>break main<CR>run<CR>', { desc = 'gdb fullscreen' })
 
 -- find and replace
 vim.keymap.set('n', '<leader>/', ':%s/', { desc = 'Find and Replace' })
@@ -130,7 +130,6 @@ end)
 --   vim.api.nvim_win_set_height(0, 15)
 --   job_id = vim.bo.channel
 -- end)
-
 
 vim.keymap.set('n', '<leader>mk', function()
   vim.fn.chansend(job_id, { 'make \r\n' })
