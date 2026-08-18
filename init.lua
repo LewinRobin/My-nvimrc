@@ -1654,6 +1654,11 @@ require('lazy').setup({
       vim.g.copilot_no_tab_map = true
       -- 2. Enable/Disable as you wish
       vim.g.copilot_enabled = 0
+      vim.g.copilot_filetypes = {
+        ['markdown'] = true,
+        ['yaml'] = true,
+        ['gitcommit'] = true,
+      }
 
       -- 3. Map <C-y> to accept the suggestion
       -- 'i' means insert mode, 'expr' is required because copilot#Accept is a function
@@ -1664,9 +1669,17 @@ require('lazy').setup({
       vim.keymap.set('i', '<A-y>', '<Plug>(copilot-accept-line)')
       vim.keymap.set('i', '<C-]>', '<Plug>(copilot-next)')
       vim.keymap.set('i', '<C-[>', '<Plug>(copilot-previous)')
-      vim.keymap.set('i', '<C-Space>', function()
-        require('copilot.suggestion').toggle_auto_trigger()
-      end, { desc = 'Toggle Copilot Suggestion' })
+      vim.keymap.set('n', '<leader>ggc', function()
+        if vim.g.copilot_enabled == true then
+          vim.cmd 'Copilot disable'
+          vim.g.copilot_enabled = false
+          vim.notify('Copilot Disabled', vim.log.levels.INFO)
+        else
+          vim.cmd 'Copilot enable'
+          vim.g.copilot_enabled = true
+          vim.notify('Copilot Enabled', vim.log.levels.INFO)
+        end
+      end, { desc = 'Toggle Copilot' })
     end,
   },
 
@@ -2106,6 +2119,27 @@ require('lazy').setup({
       }
     end,
   },
+  {
+    'lukas-reineke/indent-blankline.nvim',
+    main = 'ibl',
+    opts = {},
+  },
+  {
+    'nvim-treesitter/nvim-treesitter-context',
+    opts = {
+      enable = true, -- Enable this plugin (Can be disabled via commands)
+      max_lines = 3, -- How many lines the window should span. Values <= 0 mean no limit.
+      mode = 'cursor', -- Line used to calculate context. Choices: 'cursor', 'topline'
+    },
+  },
+  {
+    'dhruvasagar/vim-table-mode',
+    ft = { 'markdown', 'text' },
+    config = function()
+      vim.g.table_mode_corner = '|'
+      vim.g.table_mode_always_active = 1
+    end,
+  },
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
@@ -2443,9 +2477,11 @@ require('conform').setup {
 }
 
 vim.opt.laststatus = 3
-if vim.bo.modifiable then
-  vim.opt.fileformat = 'unix'
-end
+-- Auto-detect Unix (LF) first, then DOS (CRLF), then Mac (CR)
+vim.opt.fileformats = { 'unix', 'dos', 'mac' }
+
+-- Automatically strip trailing \r characters if viewing Unix files with hidden carriage returns
+vim.opt.fileformat = 'unix' -- Default format for newly created files
 
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
@@ -2559,3 +2595,54 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 vim.opt.mouse = ''
+
+-- 1. Set a sensible default for files that don't match specific rules
+vim.opt.colorcolumn = '168'
+
+-- 2. Define standard limits for specific languages
+local lang_limits = {
+  c = '81,168',
+  cpp = '81,168',
+  rust = '101,168',
+  zig = '81,168',
+  python = '80,168',
+  ruby = '81,168',
+  bash = '81,168',
+  sh = '81,168',
+
+  -- Apps & Backend
+  go = '101,168',
+  java = '101,168',
+  kotlin = '101,168',
+  php = '121,168',
+  dart = '81,168', -- Switch to "120,168" if doing heavy Flutter development
+  swift = '121,168',
+  lua = '121,168',
+
+  -- Web & Data
+  javascript = '121,168',
+  typescript = '121,168',
+  html = '121,168',
+  css = '121,168',
+  json = '121,168',
+  yaml = '121,168',
+  sql = '121,168',
+
+  -- Prose / Text
+  gitcommit = '50,168,72',
+}
+
+-- 3. Create an autocommand loop to apply these rules dynamically
+vim.api.nvim_create_augroup('LangSpecificColumns', { clear = true })
+
+for lang, columns in pairs(lang_limits) do
+  vim.api.nvim_create_autocmd('FileType', {
+    group = 'LangSpecificColumns',
+    pattern = lang,
+    callback = function()
+      -- Use opt_local so it only affects the active file buffer, not your whole layout
+      vim.opt_local.colorcolumn = columns
+    end,
+  })
+end
+vim.opt.textwidth = 167

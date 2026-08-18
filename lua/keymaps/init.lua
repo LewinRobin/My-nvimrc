@@ -46,7 +46,6 @@ vim.keymap.set('n', '<leader>G', vim.cmd.UndotreeToggle)
 --
 
 -- vim.keymap.set('n', '<C-b>', ':Ex<CR>') -- Lewin Robin // since oil is here i have commented this.
-vim.opt.colorcolumn = '169'
 -- vim.keymap.set('n', '<C-Tab>', ':bNext<CR>')
 vim.keymap.set('n', '<C-s>', ':w<CR>')
 vim.keymap.set('i', '<C-s>', '<Esc>:w<CR>i')
